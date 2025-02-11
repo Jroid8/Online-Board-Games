@@ -1,0 +1,20 @@
+{
+  "name": "online-board-games-server",
+  "version": "0.0.1",
+  "description": "Play popular board games with your friends online",
+  "license": "GPL-3.0-or-later",
+  "author": "jroid",
+  "type": "modules",
+  "main": "src/main.ts",
+  "scripts": {
+    "build": "npx tsc && node dist/app.js"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.1",
+    "@types/ws": "^8.5.14",
+    "express": "^4.21.2",
+    "typescript": "^5.7.3",
+    "ws": "^8.18.0"
+  }
+}
