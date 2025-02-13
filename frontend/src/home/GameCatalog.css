@@ -1,0 +1,42 @@
+.catalog {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.top-bar {
+	display: flex;
+}
+
+.top-bar > input {
+	flex: 1;
+}
+
+.top-bar > span {
+	margin: 0 .3em 0 1em;
+}
+
+.game-list-loading {
+	flex-grow: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.game-list {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.game-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.game-card > img {
+	border: 1px black solid;
+	width: 12rem;
+	height: 12rem;
+}
