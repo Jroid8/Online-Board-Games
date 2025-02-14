@@ -20,6 +20,9 @@ export default function SearchSortBar({
 	wholeGameList: GameInfo[];
 	setGameList: React.Dispatch<React.SetStateAction<GameInfo[]>>;
 }) {
+	const [searchInpColor] = useState(() => randPastelColor());
+	const [sortMetColor] = useState(() => randPastelColor());
+	const [orderColor] = useState(() => randPastelColor());
 	const [filter, setFilter] = useState("");
 	const sortMet = useRef<null | HTMLSelectElement>(null);
 	const [order, setOrder] = useState("nomral");
@@ -49,13 +52,13 @@ export default function SearchSortBar({
 		<div className="top-bar">
 			<input
 				type="text"
-				style={{ backgroundColor: randPastelColor() }}
+				style={{ backgroundColor: searchInpColor }}
 				onChange={(e) => setFilter(e.target.value)}
 			/>
 			<span>Order by:</span>
 			<select
 				name="sort"
-				style={{ backgroundColor: randPastelColor() }}
+				style={{ backgroundColor: sortMetColor }}
 				ref={sortMet}
 				onChange={onSortMetChanged}
 			>
@@ -66,7 +69,7 @@ export default function SearchSortBar({
 				name="order"
 				value={order}
 				onChange={(e) => setOrder(e.target.value)}
-				style={{ backgroundColor: randPastelColor() }}
+				style={{ backgroundColor: orderColor }}
 			>
 				<option value="normal">{orderNames[0]}</option>
 				<option value="reverse">{orderNames[1]}</option>
