@@ -8,11 +8,16 @@ const sortByToOrderName: { [key: string]: string[] } = {
 	player: ["Descending", "Ascending"],
 };
 
+const sortMethods: { [key: string]: (a: GameInfo, b: GameInfo) => number } = {
+	name: (a, b) => a.name.localeCompare(b.name),
+	player: (a, b) => a.playersOnline - b.playersOnline,
+};
+
 export default function SearchSortBar({
-	gameList,
+	wholeGameList,
 	setGameList,
 }: {
-	gameList: GameInfo[];
+	wholeGameList: GameInfo[];
 	setGameList: React.Dispatch<React.SetStateAction<GameInfo[]>>;
 }) {
 	const [sortBy, setSortBy] = useState("name");
@@ -22,6 +27,13 @@ export default function SearchSortBar({
 	useEffect(() => {
 		setOrderNames(sortByToOrderName[sortBy]);
 	}, [sortBy]);
+	useEffect(() => {
+		const compareFn =
+			order[0] === "n"
+				? sortMethods[sortBy]
+				: (a: GameInfo, b: GameInfo) => -sortMethods[sortBy](a, b);
+		setGameList([...wholeGameList].sort(compareFn));
+	}, [sortBy, order, setGameList, wholeGameList]);
 
 	return (
 		<div className="top-bar">

@@ -44,7 +44,7 @@ export default function GameCatalog() {
 
   return (
     <div className="catalog">
-      <SearchSortBar gameList={games} setGameList={setGames} />
+      <SearchSortBar wholeGameList={currentGames} setGameList={setGames} />
       {games.length == 0 ? loadingDiv : <GameList games={games} />}
     </div>
   );
