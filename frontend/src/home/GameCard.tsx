@@ -1,3 +1,4 @@
+import './GameCard.css';
 import GameInfo from "./GameInfo";
 
 export default function GameCard({ info }: { info: GameInfo }) {

@@ -1,0 +1,22 @@
+.game-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	border: #333333 2px solid;
+	border-radius: 0.5em;
+	margin: 1.2vmin;
+	padding: 0.7em;
+	box-shadow: 2px 3px #333333;
+}
+
+.game-card > img {
+	border: 1px black solid;
+	width: 12rem;
+	height: 12rem;
+}
+
+.game-card .online {
+	font-size: 0.8rem;
+}

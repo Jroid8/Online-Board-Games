@@ -1,0 +1,12 @@
+.top-bar {
+	display: flex;
+	align-items: center;
+}
+
+.top-bar > input {
+	flex: 1;
+}
+
+.top-bar > span {
+	margin: 0 .3em 0 1em;
+}

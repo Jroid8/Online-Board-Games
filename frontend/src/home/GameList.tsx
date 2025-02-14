@@ -1,3 +1,4 @@
+import './GameList.css';
 import GameCard from "./GameCard";
 import GameInfo from "./GameInfo";
 

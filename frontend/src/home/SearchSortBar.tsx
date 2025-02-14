@@ -1,3 +1,4 @@
+import './SearchSortBar.css';
 import { useEffect, useState } from "react";
 import GameInfo from "./GameInfo";
 
