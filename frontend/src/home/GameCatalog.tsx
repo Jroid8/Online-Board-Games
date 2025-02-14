@@ -9,19 +9,19 @@ const currentGames: GameInfo[] = [
   {
     id: 0,
     name: "Tic-Tac-Toe",
-    thumbnailURL: "",
+    thumbnailURL: "localhost",
     playersOnline: 0,
   },
   {
     id: 1,
     name: "Checkers",
-    thumbnailURL: "",
+    thumbnailURL: "localhost",
     playersOnline: 0,
   },
   {
     id: 2,
     name: "Go",
-    thumbnailURL: "",
+    thumbnailURL: "localhost",
     playersOnline: 0,
   },
 ];
@@ -39,7 +39,7 @@ export default function GameCatalog() {
   useEffect(() => {
   	setTimeout(() => {
   		setGames(currentGames)
-  	}, 1000)
+  	}, 100)
   },[])
 
   return (
