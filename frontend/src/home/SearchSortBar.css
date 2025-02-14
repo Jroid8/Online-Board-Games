@@ -1,10 +1,22 @@
 .top-bar {
 	display: flex;
 	align-items: center;
+	font-size: 1.15rem;
+	gap: 3px;
 }
 
 .top-bar > input {
 	flex: 1;
+	font-size: inherit;
+	outline: none;
+	border: 2px black solid;
+	border-radius: .3em;
+}
+
+.top-bar > select {
+	font-size: inherit;
+	border: 2px black solid;
+	border-radius: .3em;
 }
 
 .top-bar > span {
