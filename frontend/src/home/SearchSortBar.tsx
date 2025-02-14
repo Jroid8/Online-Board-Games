@@ -1,9 +1,9 @@
 import "./SearchSortBar.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import GameInfo from "./GameInfo";
 import randPastelColor from "../common/randPastelColor";
 
-const sortByToOrderName: { [key: string]: string[] } = {
+const sortMetToOrderName: { [key: string]: string[] } = {
 	name: ["A-Z", "Z-A"],
 	player: ["Descending", "Ascending"],
 };
@@ -20,20 +20,23 @@ export default function SearchSortBar({
 	wholeGameList: GameInfo[];
 	setGameList: React.Dispatch<React.SetStateAction<GameInfo[]>>;
 }) {
-	const [sortBy, setSortBy] = useState("name");
+	const sortMet = useRef<null | HTMLSelectElement>(null);
 	const [order, setOrder] = useState("nomral");
-	const [orderNames, setOrderNames] = useState(sortByToOrderName.name);
+	const [orderNames, setOrderNames] = useState(sortMetToOrderName.name);
+
+	function onSortMetChanged() {
+		setOrderNames(sortMetToOrderName[sortMet.current!.value]);
+		console.log(sortMet.current!.value);
+	}
 
 	useEffect(() => {
-		setOrderNames(sortByToOrderName[sortBy]);
-	}, [sortBy]);
-	useEffect(() => {
+		const property = sortMet.current!.value;
 		const compareFn =
 			order[0] === "n"
-				? sortMethods[sortBy]
-				: (a: GameInfo, b: GameInfo) => -sortMethods[sortBy](a, b);
+				? sortMethods[property]
+				: (a: GameInfo, b: GameInfo) => -sortMethods[property](a, b);
 		setGameList([...wholeGameList].sort(compareFn));
-	}, [sortBy, order, setGameList, wholeGameList]);
+	}, [sortMet, order, setGameList, wholeGameList]);
 
 	return (
 		<div className="top-bar">
@@ -41,9 +44,9 @@ export default function SearchSortBar({
 			<span>Order by:</span>
 			<select
 				name="sort"
-				value={sortBy}
-				onChange={(e) => setSortBy(e.target.value)}
 				style={{ backgroundColor: randPastelColor() }}
+				ref={sortMet}
+				onChange = {onSortMetChanged}
 			>
 				<option value="name">Name</option>
 				<option value="player">Player Count</option>
