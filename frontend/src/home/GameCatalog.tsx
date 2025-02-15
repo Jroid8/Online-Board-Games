@@ -62,7 +62,7 @@ export default function GameCatalog() {
 	return (
 		<div className="catalog">
 			<SearchSortBar oninput={filterSort} />
-			{gameList.length == 0 ? loadingDiv : <GameList games={gameList} />}
+			{allGames.length == 0 ? loadingDiv : <GameList games={gameList} />}
 		</div>
 	);
 }
