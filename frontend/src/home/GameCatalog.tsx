@@ -2,50 +2,67 @@ import GameInfo from "./GameInfo";
 import "./GameCatalog.css";
 import GameList from "./GameList";
 import SearchSortBar from "./SearchSortBar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import loading from "/src/common/loading.svg";
 
 const currentGames: GameInfo[] = [
-  {
-    id: 0,
-    name: "Tic-Tac-Toe",
-    thumbnailURL: "localhost",
-    playersOnline: 0,
-  },
-  {
-    id: 1,
-    name: "Checkers",
-    thumbnailURL: "localhost",
-    playersOnline: 0,
-  },
-  {
-    id: 2,
-    name: "Go",
-    thumbnailURL: "localhost",
-    playersOnline: 0,
-  },
+	{
+		id: 0,
+		name: "Tic-Tac-Toe",
+		thumbnailURL: "localhost",
+		playersOnline: 0,
+	},
+	{
+		id: 1,
+		name: "Checkers",
+		thumbnailURL: "localhost",
+		playersOnline: 1,
+	},
+	{
+		id: 2,
+		name: "Go",
+		thumbnailURL: "localhost",
+		playersOnline: 2,
+	},
 ];
 const loadingList: GameInfo[] = [];
 const loadingDiv = (
-  <div className="game-list-loading">
-    <img src={loading} />
+	<div className="game-list-loading">
+		<img src={loading} />
 		Loading Games...
-  </div>
+	</div>
 );
 
 export default function GameCatalog() {
-  const [games, setGames] = useState(loadingList);
+	const [allGames, gameListResolved] = useState(loadingList);
+	const [gameList, setGameList] = useState(allGames);
 
-  useEffect(() => {
-  	setTimeout(() => {
-  		setGames(currentGames)
-  	}, 100)
-  },[])
+	const filterSort = useCallback(
+		(filter: string, sortMet: (a: GameInfo, b: GameInfo) => number) => {
+			console.log("sort");
+			setGameList(
+				[...allGames]
+					.filter(
+						(e) =>
+							e.name.toLocaleLowerCase().indexOf(filter.toLocaleLowerCase()) >=
+							0,
+					)
+					.sort(sortMet),
+			);
+		},
+		[allGames],
+	);
 
-  return (
-    <div className="catalog">
-      <SearchSortBar wholeGameList={currentGames} setGameList={setGames} />
-      {games.length == 0 ? loadingDiv : <GameList games={games} />}
-    </div>
-  );
+	useEffect(() => {
+		setTimeout(() => {
+			gameListResolved(currentGames);
+		}, 500);
+	}, []);
+
+	return (
+		<div className="catalog">
+			<SearchSortBar oninput={filterSort} />
+			{gameList.length == 0 ? loadingDiv : <GameList games={gameList} />}
+		</div>
+	);
 }

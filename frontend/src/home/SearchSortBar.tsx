@@ -1,5 +1,5 @@
 import "./SearchSortBar.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import GameInfo from "./GameInfo";
 import randPastelColor from "../common/randPastelColor";
 
@@ -10,43 +10,37 @@ const sortMetToOrderName: { [key: string]: string[] } = {
 
 const sortMethods: { [key: string]: (a: GameInfo, b: GameInfo) => number } = {
 	name: (a, b) => a.name.localeCompare(b.name),
-	player: (a, b) => a.playersOnline - b.playersOnline,
+	player: (a, b) => b.playersOnline - a.playersOnline,
 };
 
 export default function SearchSortBar({
-	wholeGameList,
-	setGameList,
+	oninput,
 }: {
-	wholeGameList: GameInfo[];
-	setGameList: React.Dispatch<React.SetStateAction<GameInfo[]>>;
+	oninput: (
+		filter: string,
+		sortMet: (a: GameInfo, b: GameInfo) => number,
+	) => void;
 }) {
 	const [searchInpColor] = useState(() => randPastelColor());
 	const [sortMetColor] = useState(() => randPastelColor());
 	const [orderColor] = useState(() => randPastelColor());
 	const [filter, setFilter] = useState("");
-	const sortMet = useRef<null | HTMLSelectElement>(null);
-	const [order, setOrder] = useState("nomral");
+	const [sortMet, setSortMet] = useState("name");
+	const [order, setOrder] = useState("normal");
 	const [orderNames, setOrderNames] = useState(sortMetToOrderName.name);
 
-	function onSortMetChanged() {
-		setOrderNames(sortMetToOrderName[sortMet.current!.value]);
-	}
-
 	useEffect(() => {
-		const property = sortMet.current!.value;
-		const compareFn =
+		setOrderNames(sortMetToOrderName[sortMet]);
+	}, [sortMet]);
+	useEffect(() => {
+		const property = sortMethods[sortMet];
+		oninput(
+			filter,
 			order[0] === "n"
-				? sortMethods[property]
-				: (a: GameInfo, b: GameInfo) => -sortMethods[property](a, b);
-		setGameList(
-			[...wholeGameList]
-				.filter(
-					(e) =>
-						e.name.toLocaleLowerCase().indexOf(filter.toLocaleLowerCase()) >= 0,
-				)
-				.sort(compareFn),
+				? property
+				: (a: GameInfo, b: GameInfo) => -property(a, b),
 		);
-	}, [sortMet, order, setGameList, wholeGameList, filter]);
+	}, [sortMet, order, filter, oninput]);
 
 	return (
 		<div className="top-bar">
@@ -59,8 +53,8 @@ export default function SearchSortBar({
 			<select
 				name="sort"
 				style={{ backgroundColor: sortMetColor }}
-				ref={sortMet}
-				onChange={onSortMetChanged}
+				value={sortMet}
+				onChange={(e) => setSortMet(e.target.value)}
 			>
 				<option value="name">Name</option>
 				<option value="player">Player Count</option>
