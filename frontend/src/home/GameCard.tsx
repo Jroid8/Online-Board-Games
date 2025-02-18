@@ -1,8 +1,9 @@
+import PastelFloatBtn from "../common/PastelFloatBtn.tsx";
 import GameInfo from "./GameInfo";
 
 export default function GameCard({ info }: { info: GameInfo }) {
   return (
-    <div
+    <PastelFloatBtn
       css={{
         display: "flex",
         flexDirection: "column",
@@ -24,6 +25,6 @@ export default function GameCard({ info }: { info: GameInfo }) {
       <span css={{ fontSize: "0.8rem" }} className="online">
         currently playing: {info.playersOnline.toLocaleString()}
       </span>
-    </div>
+    </PastelFloatBtn>
   );
 }
