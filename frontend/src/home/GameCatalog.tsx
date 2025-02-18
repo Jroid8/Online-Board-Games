@@ -1,8 +1,7 @@
 import GameInfo from "./GameInfo";
-import "./GameCatalog.css";
 import GameList from "./GameList";
 import SearchSortBar from "./SearchSortBar";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import loading from "/src/common/loading.svg";
 
 const currentGames: GameInfo[] = [
@@ -27,7 +26,13 @@ const currentGames: GameInfo[] = [
 ];
 const loadingList: GameInfo[] = [];
 const loadingDiv = (
-	<div className="game-list-loading">
+	<div css={{
+		flexGrow: 1,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		flexDirection: "column"
+	}}>
 		<img src={loading} />
 		Loading Games...
 	</div>
@@ -39,7 +44,6 @@ export default function GameCatalog() {
 
 	const filterSort = useCallback(
 		(filter: string, sortMet: (a: GameInfo, b: GameInfo) => number) => {
-			console.log("sort");
 			setGameList(
 				[...allGames]
 					.filter(
@@ -60,7 +64,8 @@ export default function GameCatalog() {
 	}, []);
 
 	return (
-		<div className="catalog">
+		<div
+			css={{ display: "flex", flexDirection: "column", height: "100vh" }}>
 			<SearchSortBar oninput={filterSort} />
 			{allGames.length == 0 ? loadingDiv : <GameList games={gameList} />}
 		</div>

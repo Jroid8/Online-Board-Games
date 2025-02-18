@@ -1,10 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./common/shared.css";
 import { BrowserRouter, Routes } from "react-router";
 import { Route } from "react-router";
 import Home from "./home/index.tsx";
-import randPastelColor from "./common/randPastelColor.ts";
+import randPastelColor from "./common/RandPastelColor.ts";
 
 const target = document.body;
 
