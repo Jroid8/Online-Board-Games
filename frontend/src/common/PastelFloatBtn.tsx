@@ -8,14 +8,14 @@ type ComponentProps<T extends React.ElementType> =
 const style = css({
 	border: "2px black solid",
 	borderRadius: "0.7em",
-	padding: "0.7em",
+	padding: "0.4em",
 	boxShadow: "4px 6px black",
 	'&:active': {
 		boxShadow: "none",
 	}
 });
 
-export default function PastelFloatBox<T extends React.ElementType>({
+export default function PastelFloatBtn<T extends React.ElementType>({
 	as,
 	children,
 	...props
