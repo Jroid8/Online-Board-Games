@@ -10,7 +10,7 @@ export default function GameCard({ info }: { info: GameInfo }) {
         justifyContent: "center",
         alignItems: "center",
         margin: "1.2vmin",
-				padding: "0.7em"
+        padding: "0.7em",
       }}
     >
       <img

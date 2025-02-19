@@ -10,12 +10,12 @@ const target = document.body;
 
 target.style.backgroundColor = randPastelColor(96);
 createRoot(target).render(
-	<StrictMode>
-		<TopBar />
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<Home />} />
-			</Routes>
-		</BrowserRouter>
-	</StrictMode>,
+  <StrictMode>
+    <TopBar />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
+  </StrictMode>,
 );
