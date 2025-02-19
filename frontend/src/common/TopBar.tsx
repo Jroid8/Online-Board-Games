@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import PastelFloatBtn from "./PastelFloatBtn.tsx";
 import Cookies from "js-cookie";
 import randPastelColor from "./RandPastelColor.ts";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const linkStyle = css({
 	margin: "0 0.2em",
@@ -35,19 +35,9 @@ const loginLinks = (
 	</div>
 );
 
-const titleElem = (
-	<svg height="70" width="620" xmlns="http://www.w3.org/2000/svg">
-		<text x="0" y="60" css={{ fontSize: 60, fontWeight: "bold" }}>
-			{"Online Board Games".split("").map((c, i) => (
-				<tspan key={i} fill={randPastelColor()} stroke="#333" strokeWidth="2">
-					{c}
-				</tspan>
-			))}
-		</text>
-	</svg>
-);
-
 export default function TopBar() {
+	const navigate = useNavigate();
+
 	return (
 		<nav
 			css={{
@@ -56,7 +46,25 @@ export default function TopBar() {
 				alignItems: "center",
 			}}
 		>
-			{titleElem}
+			<svg height="70" width="620" xmlns="http://www.w3.org/2000/svg">
+				<text
+					x="0"
+					y="60"
+					css={{ fontSize: 60, fontWeight: "bold", cursor: "pointer" }}
+					onClick={() => navigate("/")}
+				>
+					{"Online Board Games".split("").map((c, i) => (
+						<tspan
+							key={i}
+							fill={randPastelColor()}
+							stroke="#333"
+							strokeWidth="2"
+						>
+							{c}
+						</tspan>
+					))}
+				</text>
+			</svg>
 			{Cookies.get("session") ? userLinks : loginLinks}
 		</nav>
 	);
