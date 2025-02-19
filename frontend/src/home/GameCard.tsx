@@ -23,10 +23,10 @@ export default function GameCard({ info }: { info: GameInfo }) {
 					height: "12rem",
 				}}
 				src={"/thumbnails/" + info.id}
-				alt={info.name + " image"}
+				alt={info.name + " thumbnail"}
 			/>
 			<span>{info.name}</span>
-			<span css={{ fontSize: "0.8rem" }} className="online">
+			<span css={{ fontSize: "0.8rem" }}>
 				currently playing: {info.playersOnline.toLocaleString()}
 			</span>
 		</PastelFloatBtn>
