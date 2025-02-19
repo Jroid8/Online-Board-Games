@@ -6,7 +6,7 @@ export default function GameCard({ info }: { info: GameInfo }) {
 	return (
 		<PastelFloatBtn
 			as={Link}
-			to={"/games/" + info.id}
+			to={"/game/" + info.id}
 			css={{
 				display: "flex",
 				flexDirection: "column",
