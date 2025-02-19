@@ -1,5 +1,5 @@
 import GameCard from "./GameCard";
-import GameInfo from "./GameInfo";
+import GameInfo from "../common/GameInfo";
 
 export default function GameList({ games }: { games: GameInfo[] }) {
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import GameInfo from "./GameInfo";
+import GameInfo from "../common/GameInfo";
 import { css } from "@emotion/react";
 import randPastelColor from "../common/RandPastelColor";
 

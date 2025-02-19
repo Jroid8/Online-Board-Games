@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import PastelFloatBtn from "../common/PastelFloatBtn.tsx";
-import GameInfo from "./GameInfo";
+import GameInfo from "../common/GameInfo";
 
 export default function GameCard({ info }: { info: GameInfo }) {
 	return (
@@ -22,7 +22,7 @@ export default function GameCard({ info }: { info: GameInfo }) {
 					width: "12rem",
 					height: "12rem",
 				}}
-				src={info.thumbnailURL}
+				src={"/thumbnails/" + info.id}
 				alt={info.name + " image"}
 			/>
 			<span>{info.name}</span>

@@ -1,4 +1,4 @@
-import GameInfo from "./GameInfo";
+import GameInfo from "../common/GameInfo";
 import GameList from "./GameList";
 import SearchSortBar from "./SearchSortBar";
 import { useCallback, useEffect, useState } from "react";
@@ -8,19 +8,16 @@ const currentGames: GameInfo[] = [
   {
     id: 0,
     name: "Tic-Tac-Toe",
-    thumbnailURL: "localhost",
     playersOnline: 0,
   },
   {
     id: 1,
     name: "Checkers",
-    thumbnailURL: "localhost",
     playersOnline: 1,
   },
   {
     id: 2,
     name: "Go",
-    thumbnailURL: "localhost",
     playersOnline: 2,
   },
 ];
