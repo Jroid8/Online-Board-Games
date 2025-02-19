@@ -20,6 +20,17 @@ const userLinks = (
   </div>
 );
 
+const loginLinks = (
+  <div>
+    <PastelFloatBtn css={linkStyle} as="a" href="/login">
+      Login
+    </PastelFloatBtn>
+    <PastelFloatBtn css={linkStyle} as="a" href="/signup">
+      Sign up
+    </PastelFloatBtn>
+  </div>
+);
+
 export default function TopBar() {
   return (
     <nav
@@ -37,7 +48,7 @@ export default function TopBar() {
       >
         Online Board Games
       </span>
-      {Cookies.get("session") && userLinks}
+      {Cookies.get("session") ? userLinks : loginLinks}
     </nav>
   );
 }
