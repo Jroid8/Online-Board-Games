@@ -1,11 +1,12 @@
+import { Link } from "react-router";
 import PastelFloatBtn from "../common/PastelFloatBtn.tsx";
 import GameInfo from "./GameInfo";
 
 export default function GameCard({ info }: { info: GameInfo }) {
 	return (
 		<PastelFloatBtn
-			as="a"
-			href={"/games/" + info.id}
+			as={Link}
+			to={"/games/" + info.id}
 			css={{
 				display: "flex",
 				flexDirection: "column",

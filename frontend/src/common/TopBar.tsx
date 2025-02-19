@@ -2,6 +2,7 @@ import { css } from "@emotion/react";
 import PastelFloatBtn from "./PastelFloatBtn.tsx";
 import Cookies from "js-cookie";
 import randPastelColor from "./RandPastelColor.ts";
+import { Link } from "react-router";
 
 const linkStyle = css({
 	margin: "0 0.2em",
@@ -11,13 +12,13 @@ const linkStyle = css({
 
 const userLinks = (
 	<div>
-		<PastelFloatBtn css={linkStyle} as="a" href="/friends">
+		<PastelFloatBtn css={linkStyle} as={Link} to="/friends">
 			Friends
 		</PastelFloatBtn>
-		<PastelFloatBtn css={linkStyle} as="a" href="/stats">
+		<PastelFloatBtn css={linkStyle} as={Link} to="/stats">
 			Stats
 		</PastelFloatBtn>
-		<PastelFloatBtn css={linkStyle} as="a" href="/settings">
+		<PastelFloatBtn css={linkStyle} as={Link} to="/settings">
 			Settings
 		</PastelFloatBtn>
 	</div>
@@ -25,10 +26,10 @@ const userLinks = (
 
 const loginLinks = (
 	<div>
-		<PastelFloatBtn css={linkStyle} as="a" href="/login">
+		<PastelFloatBtn css={linkStyle} as={Link} to="/login">
 			Login
 		</PastelFloatBtn>
-		<PastelFloatBtn css={linkStyle} as="a" href="/signup">
+		<PastelFloatBtn css={linkStyle} as={Link} to="/signup">
 			Sign up
 		</PastelFloatBtn>
 	</div>
@@ -37,8 +38,8 @@ const loginLinks = (
 const titleElem = (
 	<svg height="70" width="620" xmlns="http://www.w3.org/2000/svg">
 		<text x="0" y="60" css={{ fontSize: 60, fontWeight: "bold" }}>
-			{"Online Board Games".split("").map((c) => (
-				<tspan fill={randPastelColor()} stroke="#333" stroke-width="2">
+			{"Online Board Games".split("").map((c, i) => (
+				<tspan key={i} fill={randPastelColor()} stroke="#333" strokeWidth="2">
 					{c}
 				</tspan>
 			))}
