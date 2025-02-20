@@ -3,7 +3,21 @@ import GameInfo from "../common/GameInfo";
 import Cookies from "js-cookie";
 import PastelFloatBtn from "../common/PastelFloatBtn";
 import CommonModalCSS from "../common/CommonModalCSS";
-import HSL from "../common/HSL";
+import { css } from "@emotion/react";
+
+const closeButtonCSS = css({
+  position: "absolute",
+  top: "0.3em",
+  right: "0.4em",
+  borderRadius: "50%",
+  fontFamily: "sans-serif",
+  fontSize: 22,
+  height: "1ch",
+  width: "1ch",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+});
 
 export default function MatchMenu({
   info,
@@ -24,22 +38,7 @@ export default function MatchMenu({
       ]}
       style={{ backgroundColor: randPastelColor(86).toString() }}
     >
-      <PastelFloatBtn
-        onClick={close}
-        css={{
-          position: "absolute",
-          top: "0.3em",
-          right: "0.4em",
-          borderRadius: "50%",
-          fontFamily: "sans-serif",
-          fontSize: 22,
-          height: "1ch",
-          width: "1ch",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <PastelFloatBtn onClick={close} css={closeButtonCSS}>
         &times;
       </PastelFloatBtn>
       <img
