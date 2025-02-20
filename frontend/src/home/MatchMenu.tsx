@@ -44,13 +44,13 @@ export default function MatchMenu({
       <img
         src={"/thumbnails/" + info.id}
         css={{
-          height: "25vmin",
-          width: "25vmin",
+          height: "28vmin",
+          width: "28vmin",
           border: "1px black solid",
         }}
       />
       <div css={{ display: "flex", flexDirection: "column" }}>
-        <h1 css={{ minWidth: "10ch", margin: "0 0 1ch 0" }}>
+        <h1 css={{ minWidth: "14ch", margin: "0 0 1ch 0" }}>
           Play {info.name}
         </h1>
         <div
