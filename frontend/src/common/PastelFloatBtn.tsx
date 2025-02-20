@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import randPastelColor from "./RandPastelColor";
+import HSL from "./HSL";
 
 type ComponentProps<T extends React.ElementType> =
   React.ComponentPropsWithoutRef<T> & { as?: T };
@@ -10,9 +11,14 @@ const style = css({
   borderRadius: "0.7em",
   padding: "0.4em",
   boxShadow: "4px 6px black",
-	cursor: "pointer",
+  font: "inherit",
+  cursor: "pointer",
   "&:active": {
     boxShadow: "none",
+  },
+  "&:disabled": {
+    boxShadow: "none",
+    border: "2px #888 solid",
   },
 });
 
@@ -21,10 +27,15 @@ export default function PastelFloatBtn<T extends React.ElementType>({
   children,
   ...props
 }: ComponentProps<T>) {
-  const [color] = useState(() => randPastelColor());
+  const [color, setColor] = useState(() => randPastelColor());
   const Tag = as || "div";
+  useEffect(() => {
+    setColor((c) =>
+      props.disabled ? new HSL(c.hue, 34, 72) : new HSL(c.hue, 98, 82),
+    );
+  }, [props.disabled]);
   return (
-    <Tag css={style} style={{ backgroundColor: color }} {...props}>
+    <Tag css={style} style={{ backgroundColor: color.toString() }} {...props}>
       {children}
     </Tag>
   );

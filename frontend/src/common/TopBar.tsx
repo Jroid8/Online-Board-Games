@@ -56,7 +56,7 @@ export default function TopBar() {
 					{"Online Board Games".split("").map((c, i) => (
 						<tspan
 							key={i}
-							fill={randPastelColor()}
+							fill={randPastelColor().toString()}
 							stroke="#333"
 							strokeWidth="2"
 						>

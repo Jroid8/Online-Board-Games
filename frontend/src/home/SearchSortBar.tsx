@@ -27,9 +27,9 @@ export default function SearchSortBar({
     sortMet: (a: GameInfo, b: GameInfo) => number,
   ) => void;
 }) {
-  const [titleColor] = useState(randPastelColor);
-  const [sortColor] = useState(randPastelColor);
-  const [orderColor] = useState(randPastelColor);
+  const [titleColor] = useState(() => randPastelColor().toString());
+  const [sortColor] = useState(() => randPastelColor().toString());
+  const [orderColor] = useState(() => randPastelColor().toString());
   const [filter, setFilter] = useState("");
   const [sortMet, setSortMet] = useState("name");
   const [order, setOrder] = useState("normal");
