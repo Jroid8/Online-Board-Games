@@ -12,12 +12,11 @@ export default function ModalManager({
     content: (close: (value: T) => void) => ReactNode,
   ): Promise<T> {
     return new Promise<T>((resolve) => {
-      queue.push(
-        content((value) => {
-          setQueue((q) => q.slice(1));
-          resolve(value);
-        }),
-      );
+			const c = content((value) => {
+				setQueue((q) => q.slice(1));
+				resolve(value);
+			});
+			setQueue(q => [...q, c]);
     });
   }
 
