@@ -21,26 +21,24 @@ export default function GameMenu({ info }: { info: GameInfo }) {
           width: "33vmin",
         }}
       />
-      <div>
+      <div
+        css={{
+          button: {
+            margin: "3vh 0",
+						display: "block",
+          },
+        }}
+      >
         <h1>Play {info.name}</h1>
-        <div
-          css={{
-            height: "50%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
+        <PastelFloatBtn as="button">Random Match</PastelFloatBtn>
+        <PastelFloatBtn as="button">Create Invite Link</PastelFloatBtn>
+        <PastelFloatBtn
+          as="button"
+          disabled={!Cookies.get("session")}
+          title={Cookies.get("session") ? undefined : "Requires Login"}
         >
-          <PastelFloatBtn as="button">Random Match</PastelFloatBtn>
-          <PastelFloatBtn as="button">Create Invite Link</PastelFloatBtn>
-          <PastelFloatBtn
-            as="button"
-            disabled={!Cookies.get("session")}
-            title={Cookies.get("session") ? undefined : "Requires Login"}
-          >
-            Invite Friend
-          </PastelFloatBtn>
-        </div>
+          Invite Friend
+        </PastelFloatBtn>
       </div>
     </div>
   );
