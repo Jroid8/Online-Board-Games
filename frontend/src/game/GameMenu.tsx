@@ -7,7 +7,7 @@ export default function GameMenu({ info }: { info: GameInfo }) {
   return (
     <div
       css={{
-        backgroundColor: randPastelColor().toString(),
+        backgroundColor: randPastelColor(86).toString(),
         borderRadius: "2vmin",
         padding: "5vmin",
         display: "flex",
