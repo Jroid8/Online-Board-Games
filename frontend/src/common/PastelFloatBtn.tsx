@@ -31,7 +31,7 @@ export default function PastelFloatBtn<T extends React.ElementType>({
   const Tag = as || "div";
   useEffect(() => {
     setColor((c) =>
-      props.disabled ? new HSL(c.hue, 34, 72) : new HSL(c.hue, 98, 82),
+      props.disabled ? new HSL(c.hue, 0, 72) : new HSL(c.hue, 98, 82),
     );
   }, [props.disabled]);
   return (
