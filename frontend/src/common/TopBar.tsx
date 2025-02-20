@@ -44,6 +44,7 @@ export default function TopBar() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+				padding: "0 0.7ch"
       }}
     >
       <svg height="70" width="620" xmlns="http://www.w3.org/2000/svg">
