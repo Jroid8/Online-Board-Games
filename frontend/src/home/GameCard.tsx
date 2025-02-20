@@ -1,10 +1,20 @@
 import PastelFloatBtn from "../common/PastelFloatBtn.tsx";
 import GameInfo from "../common/GameInfo";
+import { useContext } from "react";
+import ModalContext from "../common/ModalContext.ts";
+import MatchMenu from "./MatchMenu.tsx";
 
 export default function GameCard({ info }: { info: GameInfo }) {
+	const showModal = useContext(ModalContext)!;
+	
+	function clicked() {
+		showModal((close) => <MatchMenu info={info} close={() => close(null)}/>)
+	}
+
   return (
     <PastelFloatBtn
       as="button"
+			onClick={clicked}
       css={{
         display: "flex",
         flexDirection: "column",

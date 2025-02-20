@@ -5,7 +5,6 @@ import { Route } from "react-router";
 import Home from "./home/index.tsx";
 import randPastelColor from "./common/RandPastelColor.ts";
 import TopBar from "./common/TopBar.tsx";
-import GamePage from "./game/index.tsx";
 import MatchPage from "./match/index.tsx";
 import ModalManager from "./common/ModalManager.tsx";
 
@@ -19,7 +18,6 @@ createRoot(target).render(
         <TopBar />
         <Routes>
           <Route index element={<Home />} />
-          <Route path="game/:id" element={<GamePage />} />
           <Route path="match/:id" element={<MatchPage />} />
         </Routes>
       </ModalManager>
