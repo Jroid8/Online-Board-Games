@@ -10,6 +10,7 @@ const style = css({
   borderRadius: "0.7em",
   padding: "0.4em",
   boxShadow: "4px 6px black",
+	cursor: "pointer",
   "&:active": {
     boxShadow: "none",
   },
