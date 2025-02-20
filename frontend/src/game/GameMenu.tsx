@@ -11,7 +11,9 @@ export default function GameMenu({ info }: { info: GameInfo }) {
         borderRadius: "2vmin",
         padding: "5vmin",
         display: "flex",
-        gap: "4vw",
+        gap: "6ch",
+				border: "2px black solid",
+				boxShadow: "4px 6px black",
       }}
     >
       <img
@@ -19,17 +21,18 @@ export default function GameMenu({ info }: { info: GameInfo }) {
         css={{
           height: "33vmin",
           width: "33vmin",
+					border: "1px black solid"
         }}
       />
       <div
         css={{
           button: {
             margin: "3vh 0",
-						display: "block",
+            display: "block",
           },
         }}
       >
-        <h1>Play {info.name}</h1>
+        <h1 css={{minWidth: "10ch"}}>Play {info.name}</h1>
         <PastelFloatBtn as="button">Random Match</PastelFloatBtn>
         <PastelFloatBtn as="button">Create Invite Link</PastelFloatBtn>
         <PastelFloatBtn
