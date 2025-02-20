@@ -4,6 +4,8 @@ import Cookies from "js-cookie";
 import PastelFloatBtn from "../common/PastelFloatBtn";
 import CommonModalCSS from "../common/CommonModalCSS";
 import { css } from "@emotion/react";
+import { useState } from "react";
+import loading from "../common/loading.svg";
 
 const closeButtonCSS = css({
   position: "absolute",
@@ -19,6 +21,10 @@ const closeButtonCSS = css({
   alignItems: "center",
 });
 
+const Spinner = () => (
+  <img src={loading} css={{ height: "1em", margin: "0 0.5em" }} />
+);
+
 export default function MatchMenu({
   info,
   close,
@@ -26,6 +32,23 @@ export default function MatchMenu({
   info: GameInfo;
   close: () => void;
 }) {
+  const [choice, choose] = useState(0);
+
+  async function reqRandomMatch() {
+    if (choice > 0) return;
+		choose(1);
+  }
+
+  async function reqRoom() {
+    if (choice > 0) return;
+		choose(2);
+  }
+
+  async function inviteFriend() {
+    if (choice > 0) return;
+		choose(3);
+  }
+
   return (
     <div
       css={[
@@ -61,14 +84,45 @@ export default function MatchMenu({
             flex: 1,
           }}
         >
-          <PastelFloatBtn as="button">Random Match</PastelFloatBtn>
-          <PastelFloatBtn as="button">Create Invite Link</PastelFloatBtn>
           <PastelFloatBtn
             as="button"
-            disabled={!Cookies.get("session")}
-            title={Cookies.get("session") ? undefined : "Requires Login"}
+            disabled={choice > 1}
+            onClick={reqRandomMatch}
           >
-            Invite Friend
+            {choice == 1 ? (
+              <>
+                <Spinner /> Waiting for Players
+              </>
+            ) : (
+              <>Random Match</>
+            )}
+          </PastelFloatBtn>
+          <PastelFloatBtn
+            as="button"
+            disabled={choice == 1 || choice == 3}
+            onClick={reqRoom}
+          >
+            {choice == 2 ? (
+              <>
+                <Spinner /> Making Room
+              </>
+            ) : (
+              <>Create Invite Link</>
+            )}
+          </PastelFloatBtn>
+          <PastelFloatBtn
+            as="button"
+            disabled={!Cookies.get("session") || choice == 1 || choice == 2}
+            title={Cookies.get("session") ? undefined : "Requires Login"}
+						onClick={inviteFriend}
+          >
+            {choice == 3 ? (
+              <>
+                <Spinner /> Waiting for Friend
+              </>
+            ) : (
+              <>Invite Friend</>
+            )}
           </PastelFloatBtn>
         </div>
       </div>
