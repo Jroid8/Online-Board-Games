@@ -7,19 +7,22 @@ import randPastelColor from "./common/RandPastelColor.ts";
 import TopBar from "./common/TopBar.tsx";
 import GamePage from "./game/index.tsx";
 import MatchPage from "./match/index.tsx";
+import ModalManager from "./common/ModalManager.tsx";
 
 const target = document.body;
 
 target.style.backgroundColor = randPastelColor(96).toString();
 createRoot(target).render(
-  <StrictMode>
-    <BrowserRouter>
-      <TopBar />
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="game/:id" element={<GamePage />} />
-        <Route path="match/:id" element={<MatchPage />} />
-      </Routes>
-    </BrowserRouter>
-  </StrictMode>,
+	<StrictMode>
+		<BrowserRouter>
+			<ModalManager>
+				<TopBar />
+				<Routes>
+					<Route index element={<Home />} />
+					<Route path="game/:id" element={<GamePage />} />
+					<Route path="match/:id" element={<MatchPage />} />
+				</Routes>
+			</ModalManager>
+		</BrowserRouter>
+	</StrictMode>,
 );
