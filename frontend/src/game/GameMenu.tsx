@@ -25,7 +25,7 @@ export default function GameMenu({ info }: { info: GameInfo }) {
         <h1>Play {info.name}</h1>
         <div
           css={{
-						height: "50%",
+            height: "50%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
