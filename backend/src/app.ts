@@ -1,22 +1,15 @@
 import "dotenv/config";
 import { createServer } from "http";
-import { Server as WebSocketServer, RawData } from "ws";
+import { Server as WebSocketServer } from "ws";
 import express from "express";
 import Cookie from "cookie";
 import { Player } from "./player";
 import { randomBytes } from "node:crypto";
 import { IncomingHttpHeaders } from "node:http2";
-import Room from "./room";
 
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
-
-const hub: Room = {
-  handle(player: Player, data: RawData) {
-    // handle entering rooms
-  },
-};
 
 const players: Map<number, Player> = new Map();
 const tokenPlayerMap: Map<string, number> = new Map();
