@@ -36,6 +36,19 @@ function createGuestSession(
   reqHeaders.cookie = cookie;
 }
 
+function handleChatMsg(sender: Player, msg: Buffer): boolean {
+  if (msg[0] != 201) return false;
+  if (msg.length > 5) {
+    const recipient = players.get(msg.readUInt32BE(1));
+    if (recipient && recipient.ws) {
+      msg.writeUInt8(202, 0);
+      msg.writeUInt32BE(sender.id);
+      recipient.ws.send(msg);
+    }
+  }
+  return true;
+}
+
 wss.on("headers", (headers, req) => {
   if (!req.headers.cookie) createGuestSession(headers, req.headers);
   else {
@@ -55,6 +68,7 @@ wss.on("connection", (ws, req) => {
   ws.on("error", console.error);
   ws.on("message", (data) => {
     // assumption is safe because ws.binaryType = "nodebuffer"
+		if (!handleChatMsg(player, data as Buffer))
       currentRoom.onMessage(player, data as Buffer);
   });
 });
