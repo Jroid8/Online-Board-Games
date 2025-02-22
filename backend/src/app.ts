@@ -78,6 +78,10 @@ wss.on("connection", (ws, req) => {
     if (!handleChatMsg(player, data as Buffer))
       player.room.onMessage(player, data as Buffer);
   });
+  ws.on("close", () => {
+		player.ws = null;
+    if (player.room.onDisconnect) player.room.onDisconnect(player);
+  });
 });
 
 // temporary
