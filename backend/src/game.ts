@@ -29,16 +29,19 @@ export abstract class GameRoom implements Room {
   }
 
   addPlayers(players: Player[]) {
-    const presentPlayersMsg = Buffer.alloc(2 + players.length * 4);
-    presentPlayersMsg.writeUInt8(230);
-    presentPlayersMsg.writeUInt8(players.length, 1);
-    for (let i = 0; i < players.length; i++)
-      presentPlayersMsg.writeUInt32BE(players[i].id, i * 4 + 2);
-		for (const p of players) {
-			p.room = this;
-			p.ws!.send(presentPlayersMsg);
-		}
-		this.players = players;
+    for (const p of players) {
+      const presentPlayersMsg = Buffer.alloc(2 + (players.length - 1) * 4);
+      presentPlayersMsg.writeUInt8(230);
+      presentPlayersMsg.writeUInt8(players.length - 1, 1);
+			let i = 0;
+      for (const o of players.filter((o) => p.id != o.id)) {
+        presentPlayersMsg.writeUInt32BE(o.id, i * 4 + 2);
+				i++;
+      }
+      p.room = this;
+      p.ws!.send(presentPlayersMsg);
+    }
+    this.players = players;
   }
 
   onDisconnect(player: Player, hub: Room) {
