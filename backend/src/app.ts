@@ -30,7 +30,7 @@ function createGuestSession(
   reqHeaders: IncomingHttpHeaders,
 ) {
   let token = genSessionToken();
-  let id = ++guestCount;
+  let id = guestCount++;
   tokenPlayerMap.set(token, id);
   players.set(id, {
     id,
