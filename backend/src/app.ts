@@ -38,9 +38,14 @@ function createGuestSession(
     isGuest: true,
     room: hub,
   });
-  let cookie = "session=" + token + ";SameSite=Lax";
-  headers.push("Set-Cookie: " + cookie);
-  reqHeaders.cookie = cookie;
+  let expires = new Date(Date.now());
+  expires.setDate(expires.getDate() + 1);
+  let biscuit = cookie.serialize("session", token, {
+    sameSite: "lax",
+    expires,
+  });
+  headers.push("Set-Cookie: " + biscuit);
+  reqHeaders.cookie = biscuit;
 }
 
 function handleChatMsg(sender: Player, msg: Buffer): boolean {
