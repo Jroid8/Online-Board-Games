@@ -15,6 +15,7 @@ const wss = new WebSocketServer({ server, maxPayload: 256 });
 
 const players: Map<number, Player> = new Map();
 const tokenPlayerMap: Map<string, number> = new Map();
+const playerForgetTimeouts: Map<number, NodeJS.Timeout> = new Map();
 let guestCount = 0;
 const hub = new Hub();
 
@@ -75,7 +76,11 @@ wss.on("headers", (headers, req) => {
 wss.on("connection", (ws, req) => {
   let token = cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
   let player = players.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
-	player.ws = ws;
+
+  player.ws = ws;
+  if (playerForgetTimeouts.get(player.id))
+    clearTimeout(playerForgetTimeouts.get(player.id));
+
   ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
   ws.on("error", console.error);
   ws.on("message", (data) => {
@@ -84,14 +89,26 @@ wss.on("connection", (ws, req) => {
       player.room.onMessage(player, data as Buffer);
   });
   ws.on("close", () => {
-		player.ws = null;
+    player.ws = null;
     if (player.room.onDisconnect) player.room.onDisconnect(player);
+    playerForgetTimeouts.set(
+      player.id,
+      setTimeout(
+        () => {
+          players.delete(player.id);
+          tokenPlayerMap.delete(token);
+        },
+        1000 * 60 * 60,
+      ),
+    );
   });
 });
 
 // temporary
 app.get("/", async (_, res) => {
-	res.send("<!DOCTYPE html><script>" + await readFile('test.js') + "</script>");
+  res.send(
+    "<!DOCTYPE html><script>" + (await readFile("test.js")) + "</script>",
+  );
 });
 
 server.listen(process.env.PORT || 8080);
