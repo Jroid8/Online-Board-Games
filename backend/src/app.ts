@@ -30,7 +30,13 @@ function createGuestSession(
   let token = genSessionToken();
   let id = ++guestCount;
   tokenPlayerMap.set(token, id);
-  players.set(id, { id, ws: null, name: "Guest" + id, isGuest: true });
+  players.set(id, {
+    id,
+    ws: null,
+    name: "Guest" + id,
+    isGuest: true,
+    room: hub,
+  });
   let cookie = "session=" + token + ";SameSite=Lax";
   headers.push("Set-Cookie: " + cookie);
   reqHeaders.cookie = cookie;
@@ -61,15 +67,14 @@ wss.on("headers", (headers, req) => {
 });
 
 wss.on("connection", (ws, req) => {
-  let currentRoom = hub;
   let token = Cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
   let player = players.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
   ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
   ws.on("error", console.error);
   ws.on("message", (data) => {
     // assumption is safe because ws.binaryType = "nodebuffer"
-		if (!handleChatMsg(player, data as Buffer))
-      currentRoom.onMessage(player, data as Buffer);
+    if (!handleChatMsg(player, data as Buffer))
+      player.room.onMessage(player, data as Buffer);
   });
 });
 
