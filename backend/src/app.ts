@@ -7,6 +7,7 @@ import { Player } from "./player";
 import { randomBytes } from "node:crypto";
 import { IncomingHttpHeaders } from "node:http2";
 import Hub from "./hub";
+import { readFile } from "node:fs/promises";
 
 const app = express();
 const server = createServer(app);
@@ -69,6 +70,7 @@ wss.on("headers", (headers, req) => {
 wss.on("connection", (ws, req) => {
   let token = cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
   let player = players.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
+	player.ws = ws;
   ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
   ws.on("error", console.error);
   ws.on("message", (data) => {
@@ -79,8 +81,8 @@ wss.on("connection", (ws, req) => {
 });
 
 // temporary
-app.get("/", (_, res) => {
-  res.send("<!DOCTYPE html>");
+app.get("/", async (_, res) => {
+	res.send("<!DOCTYPE html><script>" + await readFile('test.js') + "</script>");
 });
 
 server.listen(process.env.PORT || 8080);
