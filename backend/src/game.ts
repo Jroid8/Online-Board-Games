@@ -18,10 +18,14 @@ export abstract class GameRoom implements Room {
     joinBroadcastMsg.writeUInt8(231);
     joinBroadcastMsg.writeUInt32BE(player.id, 1);
     for (const p of this.players) p.ws!.send(joinBroadcastMsg);
+    const presentPlayersMsg = Buffer.alloc(2 + this.players.length * 4);
+    presentPlayersMsg.writeUInt8(230);
+    presentPlayersMsg.writeUInt8(this.players.length, 1);
+    for (let i = 0; i < this.players.length; i++)
+      presentPlayersMsg.writeUInt32BE(this.players[i].id, i * 4 + 2);
+    player.ws!.send(presentPlayersMsg);
     this.players.push(player);
     player.room = this;
-    // joining doesn't happen when the player is absent, so this should be safe
-    player.ws!.send(Buffer.from([230]));
   }
 
   addPlayers(players: Player[]) {
