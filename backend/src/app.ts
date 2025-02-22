@@ -43,12 +43,12 @@ function createGuestSession(
 }
 
 function handleChatMsg(sender: Player, msg: Buffer): boolean {
-  if (msg[0] != 201) return false;
+  if (msg[0] != 250) return false;
   if (msg.length > 5) {
     const recipient = players.get(msg.readUInt32BE(1));
-    if (recipient && recipient.ws) {
-      msg.writeUInt8(202, 0);
-      msg.writeUInt32BE(sender.id);
+    if (recipient?.ws) {
+      msg.writeUInt8(250, 0);
+      msg.writeUInt32BE(sender.id, 1);
       recipient.ws.send(msg);
     }
   }
