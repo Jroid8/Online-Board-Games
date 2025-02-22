@@ -2,7 +2,7 @@ import "dotenv/config";
 import { createServer } from "http";
 import { Server as WebSocketServer } from "ws";
 import express from "express";
-import Cookie from "cookie";
+import * as cookie from "cookie";
 import { Player } from "./player";
 import { randomBytes } from "node:crypto";
 import { IncomingHttpHeaders } from "node:http2";
@@ -58,7 +58,7 @@ function handleChatMsg(sender: Player, msg: Buffer): boolean {
 wss.on("headers", (headers, req) => {
   if (!req.headers.cookie) createGuestSession(headers, req.headers);
   else {
-    let session = Cookie.parse(req.headers.cookie).session;
+    let session = cookie.parse(req.headers.cookie).session;
     if (session && tokenPlayerMap.get(session)) return;
     // If exists on database load it into tokenPlayerMap and players
     // else
@@ -67,7 +67,7 @@ wss.on("headers", (headers, req) => {
 });
 
 wss.on("connection", (ws, req) => {
-  let token = Cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
+  let token = cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
   let player = players.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
   ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
   ws.on("error", console.error);
