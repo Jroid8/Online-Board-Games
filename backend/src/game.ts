@@ -22,9 +22,10 @@ export abstract class GameRoom implements Room {
     for (const p of players) this.addPlayer(p);
   }
 
-  onDisconnect(player: Player) {
+  onDisconnect(player: Player, hub: Room) {
     setTimeout(
       () => {
+				player.room = hub;
         for (let i = 0; i < this.players.length; i++)
           if (this.players[i].id == player.id) this.players.splice(i, 1);
       },

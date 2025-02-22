@@ -90,7 +90,7 @@ wss.on("connection", (ws, req) => {
   });
   ws.on("close", () => {
     player.ws = null;
-    if (player.room.onDisconnect) player.room.onDisconnect(player);
+    if (player.room.onDisconnect) player.room.onDisconnect(player, hub);
     playerForgetTimeouts.set(
       player.id,
       setTimeout(
