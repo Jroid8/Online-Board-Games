@@ -1,5 +1,6 @@
 import { RawData } from "ws";
+import { Player } from "./player";
 
 export default interface Room {
-	handle(socketData: RawData): void;
+	handle(player: Player, socketData: RawData): void;
 }
