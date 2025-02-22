@@ -107,7 +107,9 @@ wss.on("connection", (ws, req) => {
 // temporary
 app.get("/", async (_, res) => {
   res.send(
-    "<!DOCTYPE html><script>" + (await readFile("test.js")) + "</script>",
+    "<!DOCTYPE html><style>body {background-color: black}</style><script>" +
+      (await readFile("test.js")) +
+      "</script>",
   );
 });
 
