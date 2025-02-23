@@ -60,6 +60,7 @@ export default class TicTacToe extends GameRoom {
       }
     } else {
       player.ws!.send(Buffer.from([220]));
+      this.turn = 1 - this.turn;
     }
   }
 
@@ -75,6 +76,6 @@ export default class TicTacToe extends GameRoom {
     let state = Buffer.alloc(9);
     for (let i = 0; i < this.players.length; i++)
       state.writeUInt8(this.board[Math.floor(i / 3)][i % 3], i);
-		return state;
+    return state;
   }
 }
