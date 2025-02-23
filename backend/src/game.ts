@@ -13,6 +13,7 @@ export interface GameInfo {
 export abstract class GameRoom implements Room {
   players: Player[] = [];
   started: boolean = false;
+  forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
 
   constructor(players?: Player[]) {
     if (players) {
@@ -39,11 +40,16 @@ export abstract class GameRoom implements Room {
     }
   }
 
-  addPlayer(player: Player) {
+  informPlayerJoin(player: Player) {
     const joinBroadcastMsg = Buffer.alloc(5);
     joinBroadcastMsg.writeUInt8(231);
     joinBroadcastMsg.writeUInt32BE(player.id, 1);
-    for (const p of this.players) p.ws!.send(joinBroadcastMsg);
+    for (const p of this.players)
+      if (p.ws && p.id != player.id) p.ws.send(joinBroadcastMsg);
+  }
+
+  addPlayer(player: Player) {
+    this.informPlayerJoin(player);
     const presentPlayersMsg = Buffer.alloc(2 + this.players.length * 4);
     presentPlayersMsg.writeUInt8(230);
     presentPlayersMsg.writeUInt8(this.players.length, 1);
@@ -59,24 +65,34 @@ export abstract class GameRoom implements Room {
 
   onDisconnect(player: Player, hub: Room) {
     let disconnectMsg = Buffer.alloc(5);
-    disconnectMsg.writeUInt8(238);
+    disconnectMsg.writeUInt8(233);
     disconnectMsg.writeUInt32BE(player.id);
-    if (this.started)
-      setTimeout(
-        () => {
-          for (const p of this.players) {
-            if (p.ws) p.ws.send(disconnectMsg);
-            p.room = hub;
-          }
-          this.players = [];
-        },
-        1000 * 60 * 2.5,
+    let notThisPlayer = this.players.filter((p) => p.id != player.id);
+    if (this.started) {
+      for (const p of notThisPlayer) if (p.ws) p.ws.send(disconnectMsg);
+      this.forfeitTimeouts.set(
+        player.id,
+        setTimeout(
+          () => {
+            for (const p of notThisPlayer) {
+              if (p.ws) p.ws.send(Buffer.from([238]));
+              p.room = hub;
+            }
+            this.players = [];
+          },
+          1000 * 60 * 2.5,
+        ),
       );
-    else {
-      this.players = this.players.filter((p) => p.id != player.id);
+    } else {
+      this.players = notThisPlayer;
       player.room = hub;
       for (const p of this.players) p.ws!.send(disconnectMsg);
     }
+  }
+
+  onRejoin(player: Player): void {
+    clearTimeout(this.forfeitTimeouts.get(player.id));
+    this.informPlayerJoin(player);
   }
 
   begin(inform: boolean) {

@@ -78,8 +78,10 @@ wss.on("connection", (ws, req) => {
   let player = players.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
 
   player.ws = ws;
-  if (playerForgetTimeouts.get(player.id))
+  if (playerForgetTimeouts.get(player.id)) {
     clearTimeout(playerForgetTimeouts.get(player.id));
+    if (player.room.onRejoin) player.room.onRejoin(player);
+  }
 
   ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
   ws.on("error", console.error);
