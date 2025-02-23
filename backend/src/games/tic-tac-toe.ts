@@ -20,21 +20,20 @@ export default class TicTacToe extends GameRoom {
     this.board = Array.from({ length: 3 }, () =>
       new Array(3).fill(BoardSlot.Empty),
     );
-		console.log(JSON.stringify(this.board));
     this.turn = 0;
   }
 
   checkWin(x: number, y: number): boolean {
-    const mark = this.board[x][y];
-    if ([0, 1, 2].every((i) => this.board[y][i] == mark)) return true;
-    if ([0, 1, 2].every((i) => this.board[i][x] == mark)) return true;
+    const mark = this.board[y][x];
+    if ([0, 1, 2].every((i) => this.board[y][i] === mark)) return true;
+    if ([0, 1, 2].every((i) => this.board[i][x] === mark)) return true;
     return (
-      (this.board[0][0] == this.board[1][1] &&
-        this.board[1][1] == this.board[2][2] &&
-        this.board[2][2] == mark) ||
-      (this.board[0][2] == this.board[1][1] &&
-        this.board[1][1] == this.board[2][0] &&
-        this.board[2][0] == mark)
+      (this.board[0][0] === this.board[1][1] &&
+        this.board[1][1] === this.board[2][2] &&
+        this.board[2][2] === mark) ||
+      (this.board[0][2] === this.board[1][1] &&
+        this.board[1][1] === this.board[2][0] &&
+        this.board[2][0] === mark)
     );
   }
 
