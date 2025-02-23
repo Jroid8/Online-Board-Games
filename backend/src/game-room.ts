@@ -9,10 +9,15 @@ export default abstract class GameRoom implements Room {
   players: Player[] = [];
   forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
 
+	private staticFields(): GameInfo {
+		return this.constructor as unknown as GameInfo;
+	}
+
   constructor(players?: Player[]) {
     if (players) {
+      this.players = players;
       const gameStarted =
-        this.players.length == (this as unknown as GameInfo).playerCount;
+        players.length == this.staticFields().playerCount;
       const buffSize = 3 + (players.length - 1) * 4;
       const gameInitMsg = gameStarted ? this.begin() : Buffer.alloc(0);
       for (let i = 0; i < players.length; i++) {
@@ -31,7 +36,6 @@ export default abstract class GameRoom implements Room {
         // so using player.ws! should be safe
         players[i].ws!.send(Buffer.concat([generalStateMsg, gameInitMsg]));
       }
-      this.players = players;
     }
   }
 
@@ -44,14 +48,14 @@ export default abstract class GameRoom implements Room {
   }
 
   getPlayerIndex(player: Player): number | null {
-    const playerCount = (this as unknown as GameInfo).playerCount;
+    const playerCount = this.staticFields().playerCount;
     for (let i = 0; i < this.players.length && i < playerCount; i++)
       if (this.players[i].id == player.id) return i;
     return null;
   }
 
   register(player: Player) {
-    const playerCount = (this as unknown as GameInfo).playerCount;
+    const playerCount = this.staticFields().playerCount;
     this.informPlayerJoin(player);
     const stateMsg = Buffer.alloc(2 + this.players.length * 4);
     stateMsg.writeUInt8(230);
@@ -74,7 +78,7 @@ export default abstract class GameRoom implements Room {
   }
 
   onDisconnect(player: Player) {
-    const playerCount = (this as unknown as GameInfo).playerCount;
+    const playerCount = this.staticFields().playerCount;
     let disconnectMsg = Buffer.alloc(5);
     disconnectMsg.writeUInt8(233);
     disconnectMsg.writeUInt32BE(player.id, 1);
