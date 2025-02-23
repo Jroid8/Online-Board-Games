@@ -46,9 +46,9 @@ export default class TicTacToe extends GameRoom {
       return;
     this.board[y][x] = playerIndex ? BoardSlot.O : BoardSlot.X;
     let update = Buffer.alloc(6);
-    update.writeUInt8(1, 4);
+    update.writeUInt8(1);
     update.writeUInt32BE(player.id, 1);
-    update.writeUInt8(msg[1], 4);
+    update.writeUInt8(msg[1], 5);
     for (const p of this.players) if (p.id != player.id) p.ws!.send(update);
     if (this.checkWin(x, y)) {
       let winMsg = Buffer.alloc(5);
