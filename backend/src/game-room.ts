@@ -77,7 +77,7 @@ export default abstract class GameRoom implements Room {
     let notThisPlayer = this.players.filter((p) => p.id != player.id);
     if (
       this.players.length >= playerCount &&
-      this.getPlayerIndex(player)
+      this.getPlayerIndex(player) !== null
     ) {
       for (const p of notThisPlayer) if (p.ws) p.ws.send(disconnectMsg);
       this.forfeitTimeouts.set(
