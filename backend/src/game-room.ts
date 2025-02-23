@@ -14,17 +14,17 @@ export default abstract class GameRoom implements Room {
       const gameStarted =
         this.players.length == (this as unknown as GameInfo).playerCount;
       const buffSize = 3 + (players.length - 1) * 4;
-      const gameInitMsg = this.begin();
+      const gameInitMsg = gameStarted ? this.begin() : Buffer.alloc(0);
       for (let i = 0; i < players.length; i++) {
         const generalStateMsg = Buffer.alloc(buffSize);
         generalStateMsg.writeUInt8(230);
         generalStateMsg.writeUInt8(gameStarted ? 1 : 0, 1);
         generalStateMsg.writeUInt8(players.length - 1, 2);
-        let i = 0;
+        let j = 0;
         for (const p of players) {
-          if (p.id == players[i].id) continue;
-          generalStateMsg.writeUInt32BE(p.id, i * 4 + 3);
-          i++;
+          if (p.id == players[j].id) continue;
+          generalStateMsg.writeUInt32BE(p.id, j * 4 + 3);
+          j++;
         }
         players[i].room = this;
         // joining doesn't happen when the player is absent
