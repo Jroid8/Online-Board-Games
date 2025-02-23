@@ -57,20 +57,26 @@ export abstract class GameRoom implements Room {
       this.begin(true);
   }
 
-  addPlayers(players: Player[]) {
-    for (const p of players) {
-      const presentPlayersMsg = Buffer.alloc(2 + (players.length - 1) * 4);
-      presentPlayersMsg.writeUInt8(230);
-      presentPlayersMsg.writeUInt8(players.length - 1, 1);
-			let i = 0;
-      for (const o of players.filter((o) => p.id != o.id)) {
-        presentPlayersMsg.writeUInt32BE(o.id, i * 4 + 2);
-				i++;
-      }
-      p.room = this;
-      p.ws!.send(presentPlayersMsg);
+  onDisconnect(player: Player, hub: Room) {
+    let disconnectMsg = Buffer.alloc(5);
+    disconnectMsg.writeUInt8(238);
+    disconnectMsg.writeUInt32BE(player.id);
+    if (this.started)
+      setTimeout(
+        () => {
+          for (const p of this.players) {
+            if (p.ws) p.ws.send(disconnectMsg);
+            p.room = hub;
+          }
+          this.players = [];
+        },
+        1000 * 60 * 2.5,
+      );
+    else {
+      this.players = this.players.filter((p) => p.id != player.id);
+      player.room = hub;
+      for (const p of this.players) p.ws!.send(disconnectMsg);
     }
-    this.players = players;
   }
 
   begin(inform: boolean) {
