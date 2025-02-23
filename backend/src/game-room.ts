@@ -107,7 +107,16 @@ export default abstract class GameRoom implements Room {
   onRejoin(player: Player): void {
     clearTimeout(this.forfeitTimeouts.get(player.id));
     this.informPlayerJoin(player);
-    player.ws!.send(Buffer.concat([Buffer.from([240]), this.serializeState()]));
+    const generalStateMsg = Buffer.alloc(2 + (this.players.length + 1) * 4);
+    generalStateMsg.writeUInt8(230);
+    generalStateMsg.writeUInt8(this.players.length - 1, 1);
+    let j = 0;
+    for (const p of this.players) {
+      if (p.id == this.players[j].id) continue;
+      generalStateMsg.writeUInt32BE(p.id, j * 4 + 3);
+      j++;
+    }
+    player.ws!.send(Buffer.concat([generalStateMsg, this.serializeState()]));
   }
 
   abstract onMessage(player: Player, message: Buffer): void;
