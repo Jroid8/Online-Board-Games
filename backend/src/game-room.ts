@@ -7,7 +7,6 @@ import Room from "./room";
 // Problems will clearly arise once a sub class which doesn't abide by this rule is constructed outside of gameList
 export default abstract class GameRoom implements Room {
   players: Player[] = [];
-  started: boolean = false;
   forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
 
   constructor(players?: Player[]) {
@@ -30,7 +29,7 @@ export default abstract class GameRoom implements Room {
         players[i].room = this;
         // joining doesn't happen when the player is absent
         // so using player.ws! should be safe
-        players[i].ws!.send(Buffer.concat([generalStateMsg, gameInitMsg[i]]));
+        players[i].ws!.send(Buffer.concat([generalStateMsg, gameInitMsg]));
       }
       this.players = players;
     }
@@ -44,39 +43,49 @@ export default abstract class GameRoom implements Room {
       if (p.ws && p.id != player.id) p.ws.send(joinBroadcastMsg);
   }
 
-  addPlayer(player: Player) {
+	getPlayerIndex(player: Player): number | null {
+		for (let i = 0; i<this.players.length; i++)
+			if (this.players[i].id == player.id)
+				return i;
+		return null;
+	}
+
+  register(player: Player) {
+    const playerCount = (this as unknown as GameInfo).playerCount;
     this.informPlayerJoin(player);
-    const presentPlayersMsg = Buffer.alloc(2 + this.players.length * 4);
-    presentPlayersMsg.writeUInt8(230);
-    presentPlayersMsg.writeUInt8(this.players.length, 1);
+    const stateMsg = Buffer.alloc(2 + this.players.length * 4);
+    stateMsg.writeUInt8(230);
+    stateMsg.writeUInt8(this.players.length, 1);
     for (let i = 0; i < this.players.length; i++)
-      presentPlayersMsg.writeUInt32BE(this.players[i].id, i * 4 + 2);
-    // same reason as above
-    player.ws!.send(presentPlayersMsg);
+      stateMsg.writeUInt32BE(this.players[i].id, i * 4 + 2);
+    // add serialized game state to message
+    player.ws!.send(stateMsg);
     this.players.push(player);
     player.room = this;
-    if (this.players.length == (this as unknown as GameInfo).playerCount) {
+    if (this.players.length == playerCount) {
       const initMsg = this.begin();
       for (let i = 0; i < this.players.length; i++)
-        this.players[i].ws!.send(
-          Buffer.concat([Buffer.from([232]), initMsg[i]]),
-        );
+        this.players[i].ws!.send(Buffer.concat([Buffer.from([232]), initMsg]));
     }
   }
 
   onDisconnect(player: Player, hub: Room) {
+    const playerCount = (this as unknown as GameInfo).playerCount;
     let disconnectMsg = Buffer.alloc(5);
     disconnectMsg.writeUInt8(233);
     disconnectMsg.writeUInt32BE(player.id);
     let notThisPlayer = this.players.filter((p) => p.id != player.id);
-    if (this.started) {
+    if (
+      this.players.length >= playerCount &&
+      this.getPlayerIndex(player)! <= playerCount
+    ) {
       for (const p of notThisPlayer) if (p.ws) p.ws.send(disconnectMsg);
       this.forfeitTimeouts.set(
         player.id,
         setTimeout(
           () => {
             for (const p of notThisPlayer) {
-              if (p.ws) p.ws.send(Buffer.from([238]));
+              if (p.ws) p.ws.send(Buffer.from([235]));
               p.room = hub;
             }
             this.players = [];
@@ -97,5 +106,5 @@ export default abstract class GameRoom implements Room {
   }
 
   abstract onMessage(player: Player, message: Buffer): void;
-  abstract begin(): Buffer[];
+  abstract begin(): Buffer;
 }
