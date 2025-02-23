@@ -73,7 +73,7 @@ export default abstract class GameRoom implements Room {
     const playerCount = (this as unknown as GameInfo).playerCount;
     let disconnectMsg = Buffer.alloc(5);
     disconnectMsg.writeUInt8(233);
-    disconnectMsg.writeUInt32BE(player.id);
+    disconnectMsg.writeUInt32BE(player.id, 1);
     let notThisPlayer = this.players.filter((p) => p.id != player.id);
     if (
       this.players.length >= playerCount &&
