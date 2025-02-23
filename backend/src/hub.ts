@@ -13,8 +13,8 @@ export default class Hub implements Room {
         break;
       case 102:
 				if (gameID >= gameList.length) return;
-				let room = new gameList[gameID].roomImpl();
-				room.addPlayer(player);
+				let room = new gameList[gameID]();
+				room.register(player);
         break;
       case 103:
         const friend = msg.readUInt32BE(2);
