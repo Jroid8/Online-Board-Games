@@ -1,16 +1,11 @@
+import GameInfo from "./game-info";
 import { Player } from "./player";
 import Room from "./room";
-
-export interface GameInfo {
-  id: number;
-  playerCount: number;
-  gameName: string;
-}
 
 // Classes extending this MUST HAVE GameInfo fields as static fields
 // While typescript will prevent classes which don't do this from being included in gameList
 // Problems will clearly arise once a sub class which doesn't abide by this rule is constructed outside of gameList
-export abstract class GameRoom implements Room {
+export default abstract class GameRoom implements Room {
   players: Player[] = [];
   started: boolean = false;
   forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
