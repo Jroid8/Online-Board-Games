@@ -22,7 +22,7 @@ export default abstract class GameRoom implements Room {
         generalStateMsg.writeUInt8(players.length - 1, 2);
         let j = 0;
         for (const p of players) {
-          if (p.id == players[j].id) continue;
+          if (p.id == players[i].id) continue;
           generalStateMsg.writeUInt32BE(p.id, j * 4 + 3);
           j++;
         }
