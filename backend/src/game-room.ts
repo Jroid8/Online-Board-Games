@@ -66,6 +66,10 @@ export default abstract class GameRoom implements Room {
       const initMsg = this.begin();
       for (let i = 0; i < this.players.length; i++)
         this.players[i].ws!.send(Buffer.concat([Buffer.from([232]), initMsg]));
+    } else if (this.players.length > playerCount) {
+      player.ws!.send(
+        Buffer.concat([Buffer.from([240]), this.serializeState()]),
+      );
     }
   }
 
@@ -103,8 +107,10 @@ export default abstract class GameRoom implements Room {
   onRejoin(player: Player): void {
     clearTimeout(this.forfeitTimeouts.get(player.id));
     this.informPlayerJoin(player);
+    player.ws!.send(Buffer.concat([Buffer.from([240]), this.serializeState()]));
   }
 
   abstract onMessage(player: Player, message: Buffer): void;
   abstract begin(): Buffer;
+  abstract serializeState(): Buffer;
 }
