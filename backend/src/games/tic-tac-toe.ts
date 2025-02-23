@@ -55,6 +55,8 @@ export default class TicTacToe extends GameRoom {
         p.ws!.send(winMsg);
         p.room = globalThis.hub;
       }
+    } else {
+      player.ws!.send(Buffer.from([220]));
     }
   }
 
