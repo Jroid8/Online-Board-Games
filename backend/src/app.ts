@@ -17,7 +17,7 @@ const players: Map<number, Player> = new Map();
 const tokenPlayerMap: Map<string, number> = new Map();
 const playerForgetTimeouts: Map<number, NodeJS.Timeout> = new Map();
 let guestCount = 0;
-const hub = new Hub();
+globalThis.hub = new Hub();
 
 function genSessionToken(): string {
   let buf = randomBytes(40);
@@ -92,7 +92,7 @@ wss.on("connection", (ws, req) => {
   });
   ws.on("close", () => {
     player.ws = null;
-    if (player.room.onDisconnect) player.room.onDisconnect(player, hub);
+    if (player.room.onDisconnect) player.room.onDisconnect(player);
     playerForgetTimeouts.set(
       player.id,
       setTimeout(

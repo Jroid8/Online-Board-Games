@@ -69,7 +69,7 @@ export default abstract class GameRoom implements Room {
     }
   }
 
-  onDisconnect(player: Player, hub: Room) {
+  onDisconnect(player: Player) {
     const playerCount = (this as unknown as GameInfo).playerCount;
     let disconnectMsg = Buffer.alloc(5);
     disconnectMsg.writeUInt8(233);
@@ -86,7 +86,7 @@ export default abstract class GameRoom implements Room {
           () => {
             for (const p of notThisPlayer) {
               if (p.ws) p.ws.send(Buffer.from([235]));
-              p.room = hub;
+              p.room = globalThis.hub;
             }
             this.players = [];
           },
@@ -95,7 +95,7 @@ export default abstract class GameRoom implements Room {
       );
     } else {
       this.players = notThisPlayer;
-      player.room = hub;
+      player.room = globalThis.hub;
       for (const p of this.players) p.ws!.send(disconnectMsg);
     }
   }
