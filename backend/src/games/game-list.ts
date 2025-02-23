@@ -1,8 +1,9 @@
-import { GameInfo } from "../game";
+import { GameInfo, GameRoom } from "../game";
+import { Player } from "../player";
 import TicTacToe from "./tic-tac-toe";
 
-const gameList: GameInfo[] = [
-  { id: 0, playerCount: 2, gameName: "Tic-Tac-Toe", roomImpl: TicTacToe },
+const gameList: (GameInfo & (new (players: Player[]) => GameRoom))[] = [
+  TicTacToe,
 ];
 
 export default gameList;
