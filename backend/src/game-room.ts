@@ -15,23 +15,24 @@ export default abstract class GameRoom implements Room {
       const gameStarted =
         this.players.length == (this as unknown as GameInfo).playerCount;
       const buffSize = 3 + (players.length - 1) * 4;
-      for (const p of players) {
-        const presentPlayersMsg = Buffer.alloc(buffSize);
-        presentPlayersMsg.writeUInt8(230);
-        presentPlayersMsg.writeUInt8(gameStarted ? 1 : 0, 1);
-        presentPlayersMsg.writeUInt8(players.length - 1, 2);
+      const gameInitMsg = this.begin();
+      for (let i = 0; i < players.length; i++) {
+        const generalStateMsg = Buffer.alloc(buffSize);
+        generalStateMsg.writeUInt8(230);
+        generalStateMsg.writeUInt8(gameStarted ? 1 : 0, 1);
+        generalStateMsg.writeUInt8(players.length - 1, 2);
         let i = 0;
-        for (const o of players.filter((o) => p.id != o.id)) {
-          presentPlayersMsg.writeUInt32BE(o.id, i * 4 + 3);
+        for (const p of players) {
+          if (p.id == players[i].id) continue;
+          generalStateMsg.writeUInt32BE(p.id, i * 4 + 3);
           i++;
         }
-        p.room = this;
+        players[i].room = this;
         // joining doesn't happen when the player is absent
         // so using player.ws! should be safe
-        p.ws!.send(presentPlayersMsg);
+        players[i].ws!.send(Buffer.concat([generalStateMsg, gameInitMsg[i]]));
       }
       this.players = players;
-      if (gameStarted) this.begin(false);
     }
   }
 
@@ -54,8 +55,13 @@ export default abstract class GameRoom implements Room {
     player.ws!.send(presentPlayersMsg);
     this.players.push(player);
     player.room = this;
-    if (this.players.length == (this as unknown as GameInfo).playerCount)
-      this.begin(true);
+    if (this.players.length == (this as unknown as GameInfo).playerCount) {
+      const initMsg = this.begin();
+      for (let i = 0; i < this.players.length; i++)
+        this.players[i].ws!.send(
+          Buffer.concat([Buffer.from([232]), initMsg[i]]),
+        );
+    }
   }
 
   onDisconnect(player: Player, hub: Room) {
@@ -90,11 +96,6 @@ export default abstract class GameRoom implements Room {
     this.informPlayerJoin(player);
   }
 
-  begin(inform: boolean) {
-    this.started = true;
-    if (inform)
-      for (const p of this.players) if (p.ws) p.ws.send(Buffer.from([232]));
-  }
-
   abstract onMessage(player: Player, message: Buffer): void;
+  abstract begin(): Buffer[];
 }
