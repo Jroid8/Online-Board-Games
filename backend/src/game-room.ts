@@ -43,12 +43,12 @@ export default abstract class GameRoom implements Room {
       if (p.ws && p.id != player.id) p.ws.send(joinBroadcastMsg);
   }
 
-	getPlayerIndex(player: Player): number | null {
-		for (let i = 0; i<this.players.length; i++)
-			if (this.players[i].id == player.id)
-				return i;
-		return null;
-	}
+  getPlayerIndex(player: Player): number | null {
+    const playerCount = (this as unknown as GameInfo).playerCount;
+    for (let i = 0; i < this.players.length && i < playerCount; i++)
+      if (this.players[i].id == player.id) return i;
+    return null;
+  }
 
   register(player: Player) {
     const playerCount = (this as unknown as GameInfo).playerCount;
@@ -77,7 +77,7 @@ export default abstract class GameRoom implements Room {
     let notThisPlayer = this.players.filter((p) => p.id != player.id);
     if (
       this.players.length >= playerCount &&
-      this.getPlayerIndex(player)! <= playerCount
+      this.getPlayerIndex(player)
     ) {
       for (const p of notThisPlayer) if (p.ws) p.ws.send(disconnectMsg);
       this.forfeitTimeouts.set(
