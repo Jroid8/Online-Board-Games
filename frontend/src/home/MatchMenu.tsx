@@ -39,17 +39,17 @@ export default function MatchMenu({
 
   async function reqRandomMatch() {
     if (choice > 0) return;
-		choose(1);
+    choose(1);
   }
 
   async function reqRoom() {
     if (choice > 0) return;
-		choose(2);
+    choose(2);
   }
 
   async function inviteFriend() {
     if (choice > 0) return;
-		choose(3);
+    choose(3);
   }
 
   return (
@@ -60,6 +60,10 @@ export default function MatchMenu({
           position: "relative",
           display: "flex",
           gap: "4ch",
+					'@media (max-width: 700px)': {
+						flexDirection: "column",
+						alignItems: "center"
+					}
         },
       ]}
       style={{ backgroundColor: randPastelColor(86).toString() }}
@@ -70,13 +74,16 @@ export default function MatchMenu({
       <img
         src={"/thumbnails/" + info.id}
         css={{
-          height: "28vmin",
           width: "28vmin",
+          height: "auto",
           border: "1px black solid",
+					'@media (max-width: 700px)': {
+						width: "min(50vw, 35vh)",
+					}
         }}
       />
       <div css={{ display: "flex", flexDirection: "column" }}>
-        <h1 css={{ minWidth: "14ch", margin: "0 0 1ch 0" }}>
+        <h1 css={{ minWidth: "12ch", margin: "0 0 1ch 0" }}>
           Play {info.name}
         </h1>
         <div
@@ -117,7 +124,7 @@ export default function MatchMenu({
             as="button"
             disabled={!Cookies.get("session") || choice == 1 || choice == 2}
             title={Cookies.get("session") ? undefined : "Requires Login"}
-						onClick={inviteFriend}
+            onClick={inviteFriend}
           >
             {choice == 3 ? (
               <>
