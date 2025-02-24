@@ -55,41 +55,56 @@ export default function SearchSortBar({
         alignItems: "center",
         fontSize: "1.15rem",
         gap: "3px",
+				'@media(max-width: 750px)': {
+					flexDirection: "column",
+					alignItems: "start"
+				}
       }}
     >
-      <input
-        css={{
-          flex: 1,
-          fontSize: "inherit",
-          outline: "none",
-          border: "2px black solid",
-          borderRadius: "0.3em",
-        }}
-        style={{ backgroundColor: titleColor }}
-        type="text"
-        onChange={(e) => setFilter(e.target.value)}
-      />
-      <span css={{ margin: "0 0.3em 0 1em" }}>Order by:</span>
-      <select
-        css={selectCss}
-        style={{ backgroundColor: sortColor }}
-        name="sort"
-        value={sortMet}
-        onChange={(e) => setSortMet(e.target.value)}
-      >
-        <option value="name">Name</option>
-        <option value="player">Player Count</option>
-      </select>
-      <select
-        css={selectCss}
-        style={{ backgroundColor: orderColor }}
-        name="order"
-        value={order}
-        onChange={(e) => setOrder(e.target.value)}
-      >
-        <option value="normal">{orderNames[0]}</option>
-        <option value="reverse">{orderNames[1]}</option>
-      </select>
+      <div css={{
+				'@media(max-width: 750px)': {
+					width: "100vw"
+				},
+				'@media(min-width: 750px)': {
+					flex: 1,
+				}
+			}}>
+        <input
+          css={{
+            width: "100%",
+            fontSize: "inherit",
+            outline: "none",
+            border: "2px black solid",
+            borderRadius: "0.3em",
+          }}
+          style={{ backgroundColor: titleColor }}
+          type="text"
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </div>
+      <div>
+        <span>Order by:</span>
+        <select
+          css={selectCss}
+          style={{ backgroundColor: sortColor }}
+          name="sort"
+          value={sortMet}
+          onChange={(e) => setSortMet(e.target.value)}
+        >
+          <option value="name">Name</option>
+          <option value="player">Player Count</option>
+        </select>
+        <select
+          css={selectCss}
+          style={{ backgroundColor: orderColor }}
+          name="order"
+          value={order}
+          onChange={(e) => setOrder(e.target.value)}
+        >
+          <option value="normal">{orderNames[0]}</option>
+          <option value="reverse">{orderNames[1]}</option>
+        </select>
+      </div>
     </div>
   );
 }
