@@ -15,6 +15,9 @@ const style = css({
   cursor: "pointer",
   "&:active": {
     boxShadow: "none",
+    position: "relative",
+    left: 2,
+    top: 2,
   },
   "&:disabled": {
     boxShadow: "none",
@@ -25,6 +28,7 @@ const style = css({
 export default function PastelFloatBtn<T extends React.ElementType>({
   as,
   children,
+  css,
   ...props
 }: ComponentProps<T>) {
   const [color, setColor] = useState(() => randPastelColor());
@@ -35,7 +39,11 @@ export default function PastelFloatBtn<T extends React.ElementType>({
     );
   }, [props.disabled]);
   return (
-    <Tag css={style} style={{ backgroundColor: color.toString() }} {...props}>
+    <Tag
+      css={[style, css]}
+      style={{ backgroundColor: color.toString() }}
+      {...props}
+    >
       {children}
     </Tag>
   );

@@ -8,9 +8,12 @@ import { useState } from "react";
 import loading from "../common/loading.svg";
 
 const closeButtonCSS = css({
-  position: "absolute",
-  top: "0.3em",
-  right: "0.4em",
+  "&&": {
+    position: "absolute",
+    top: "0.3em",
+    right: "0.4em",
+		left: "auto",
+  },
   borderRadius: "50%",
   fontFamily: "sans-serif",
   fontSize: 22,
