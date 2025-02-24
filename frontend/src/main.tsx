@@ -16,10 +16,12 @@ createRoot(target).render(
     <BrowserRouter>
       <ModalManager>
         <TopBar />
-        <Routes>
-          <Route index element={<Home />} />
-          <Route path="match/:id" element={<MatchPage />} />
-        </Routes>
+        <div css={{ flex: 1 }}>
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="match/:id" element={<MatchPage />} />
+          </Routes>
+        </div>
       </ModalManager>
     </BrowserRouter>
   </StrictMode>,

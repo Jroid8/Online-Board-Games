@@ -68,7 +68,6 @@ export default function GameCatalog() {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        flex: 1,
       }}
     >
       <SearchSortBar oninput={filterSort} />
