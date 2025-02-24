@@ -4,9 +4,9 @@ import { BrowserRouter, Routes } from "react-router";
 import { Route } from "react-router";
 import Home from "./home/index.tsx";
 import randPastelColor from "./common/RandPastelColor.ts";
-import TopBar from "./common/TopBar.tsx";
-import MatchPage from "./match/index.tsx";
+import NavBar from "./navbar/NavBar.tsx";
 import ModalManager from "./common/ModalManager.tsx";
+import TicTacToe from "./game/TicTacToe.tsx";
 
 const target = document.body;
 
@@ -15,11 +15,11 @@ createRoot(target).render(
   <StrictMode>
     <BrowserRouter>
       <ModalManager>
-        <TopBar />
+        <NavBar />
         <div css={{ flex: 1 }}>
           <Routes>
             <Route index element={<Home />} />
-            <Route path="match/:id" element={<MatchPage />} />
+            <Route path="game/tic-tac-toe/:id" element={<TicTacToe />} />
           </Routes>
         </div>
       </ModalManager>
