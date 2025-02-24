@@ -5,8 +5,9 @@ export default function GameList({ games }: { games: GameInfo[] }) {
   return (
     <div
       css={{
-        display: "flex",
-        flexWrap: "wrap",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
+				gap: "2vmin"
       }}
     >
       {games.map((g) => (

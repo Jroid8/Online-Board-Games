@@ -20,15 +20,14 @@ export default function GameCard({ info }: { info: GameInfo }) {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        margin: "1.2vmin",
         padding: "0.7em",
       }}
     >
       <img
         css={{
           border: "1px black solid",
-          width: "12rem",
-          height: "12rem",
+          width: "10rem",
+          height: "10rem",
         }}
         src={"/thumbnails/" + info.id}
         alt={info.name + " thumbnail"}
