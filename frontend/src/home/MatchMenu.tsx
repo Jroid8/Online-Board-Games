@@ -12,13 +12,13 @@ const closeButtonCSS = css({
     position: "absolute",
     top: "0.3em",
     right: "0.4em",
-		left: "auto",
+    left: "auto",
   },
   borderRadius: "50%",
   fontFamily: "sans-serif",
   fontSize: 22,
-  height: "1ch",
-  width: "1ch",
+  height: "2ch",
+  width: "2ch",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -60,10 +60,11 @@ export default function MatchMenu({
           position: "relative",
           display: "flex",
           gap: "4ch",
-					'@media (max-width: 700px)': {
-						flexDirection: "column",
-						alignItems: "center"
-					}
+          "@media (max-width: 700px)": {
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1ch",
+          },
         },
       ]}
       style={{ backgroundColor: randPastelColor(86).toString() }}
@@ -74,12 +75,13 @@ export default function MatchMenu({
       <img
         src={"/thumbnails/" + info.id}
         css={{
-          width: "28vmin",
-          height: "auto",
+          width: "min(55vmin, 280px)",
+          height: "min(55vmin, 280px)",
           border: "1px black solid",
-					'@media (max-width: 700px)': {
-						width: "min(50vw, 35vh)",
-					}
+          "@media (max-width: 700px)": {
+            width: "min(60vw, 50vh, 280px)",
+            height: "min(60vw, 50vh, 280px)",
+          },
         }}
       />
       <div css={{ display: "flex", flexDirection: "column" }}>
@@ -92,6 +94,7 @@ export default function MatchMenu({
             justifyContent: "space-between",
             flexDirection: "column",
             flex: 1,
+            gap: "2ch",
           }}
         >
           <PastelFloatBtn
