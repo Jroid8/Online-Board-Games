@@ -1,27 +1,10 @@
 import GameInfo from "../common/GameInfo";
 import GameList from "./GameList";
 import SearchSortBar from "./SearchSortBar";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import loading from "/src/common/loading.svg";
+import GameListCtx from "../contexts/GameListCtx";
 
-const currentGames: GameInfo[] = [
-	{
-		id: 0,
-		name: "Tic-Tac-Toe",
-		playersOnline: 0,
-	},
-	{
-		id: 1,
-		name: "Checkers",
-		playersOnline: 1,
-	},
-	{
-		id: 2,
-		name: "Go",
-		playersOnline: 2,
-	},
-];
-const loadingList: GameInfo[] = [];
 const loadingDiv = (
 	<div
 		css={{
@@ -38,7 +21,7 @@ const loadingDiv = (
 );
 
 export default function GameCatalog() {
-	const [allGames, gameListResolved] = useState(loadingList);
+	const allGames = useContext(GameListCtx);
 	const [gameList, setGameList] = useState(allGames);
 
 	const filterSort = useCallback(
@@ -55,12 +38,6 @@ export default function GameCatalog() {
 		},
 		[allGames],
 	);
-
-	useEffect(() => {
-		setTimeout(() => {
-			gameListResolved(currentGames);
-		}, 500);
-	}, []);
 
 	return (
 		<div

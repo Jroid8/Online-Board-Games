@@ -8,24 +8,27 @@ import NavBar from "./navbar/NavBar.tsx";
 import ModalManager from "./modal/ModalManager.tsx";
 import TicTacToe from "./game/TicTacToe.tsx";
 import ServerConnection from "./common/ServerSocket.tsx";
+import GameListProvider from "./contexts/GameListProvider.tsx";
 
 const target = document.body;
 
 target.style.backgroundColor = randPastelColor(96).toString();
 createRoot(target).render(
 	<StrictMode>
-		<BrowserRouter>
-			<ServerConnection>
-				<ModalManager>
-					<NavBar />
-					<div css={{ flex: 1 }}>
-						<Routes>
-							<Route index element={<Home />} />
-							<Route path="tic-tac-toe/:id" element={<TicTacToe />} />
-						</Routes>
-					</div>
-				</ModalManager>
-			</ServerConnection>
-		</BrowserRouter>
+		<GameListProvider>
+			<BrowserRouter>
+				<ServerConnection>
+					<ModalManager>
+						<NavBar />
+						<div css={{ flex: 1 }}>
+							<Routes>
+								<Route index element={<Home />} />
+								<Route path="tic-tac-toe/:id" element={<TicTacToe />} />
+							</Routes>
+						</div>
+					</ModalManager>
+				</ServerConnection>
+			</BrowserRouter>
+		</GameListProvider>
 	</StrictMode>,
 );
