@@ -1,7 +1,7 @@
 import PastelFloatBtn from "../common/PastelFloatBtn.tsx";
 import GameInfo from "../common/GameInfo";
 import { useContext } from "react";
-import ModalContext from "../common/ModalContext.ts";
+import ModalContext from "../modal/ModalContext.ts";
 import MatchMenu from "./MatchMenu.tsx";
 
 export default function GameCard({ info }: { info: GameInfo }) {

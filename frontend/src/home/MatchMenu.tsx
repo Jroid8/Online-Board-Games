@@ -2,7 +2,7 @@ import randPastelColor from "../common/RandPastelColor";
 import GameInfo from "../common/GameInfo";
 import Cookies from "js-cookie";
 import PastelFloatBtn from "../common/PastelFloatBtn";
-import CommonModalCSS from "../common/CommonModalCSS";
+import CommonModalCSS from "../modal/CommonModalCSS";
 import { css } from "@emotion/react";
 import { useState } from "react";
 import loading from "../common/loading.svg";

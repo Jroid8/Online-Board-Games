@@ -5,7 +5,7 @@ export default {
   border: "2px solid " + shadow,
   boxShadow: "6px 9px " + shadow,
   "@media (max-width: 620px)": {
-    padding: "3vmin",
+    padding: "2ch",
   },
   "@media (min-width: 620px)": {
     padding: "3.7ch",

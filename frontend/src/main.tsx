@@ -5,7 +5,7 @@ import { Route } from "react-router";
 import Home from "./home/index.tsx";
 import randPastelColor from "./common/RandPastelColor.ts";
 import NavBar from "./navbar/NavBar.tsx";
-import ModalManager from "./common/ModalManager.tsx";
+import ModalManager from "./modal/ModalManager.tsx";
 import TicTacToe from "./game/TicTacToe.tsx";
 
 const target = document.body;
