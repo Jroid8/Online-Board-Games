@@ -7,7 +7,8 @@ export default function GameList({ games }: { games: GameInfo[] }) {
       css={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
-				gap: "2vmin"
+				gap: "2vmin",
+				padding: 3,
       }}
     >
       {games.map((g) => (
