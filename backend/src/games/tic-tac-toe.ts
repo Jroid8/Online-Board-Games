@@ -15,7 +15,7 @@ export default class TicTacToe extends GameRoom {
   board: BoardSlot[][];
   turn: number;
 
-  constructor(players?: Player[]) {
+  constructor(players: Player[]) {
     super(players);
     this.board = Array.from({ length: 3 }, () =>
       new Array(3).fill(BoardSlot.Empty),
@@ -38,7 +38,7 @@ export default class TicTacToe extends GameRoom {
   }
 
   onMessage(player: Player, msg: Buffer): void {
-    let playerIndex = this.getPlayerIndex(player);
+    let playerIndex = this.playerIndex.get(player.id);
     if (playerIndex === null || msg.length <= 1 || msg[0] != 1) return;
     const [x, y] = [msg[1] % 3, Math.floor(msg[1] / 3)];
     if (playerIndex !== this.turn || this.board[y][x] != BoardSlot.Empty)
