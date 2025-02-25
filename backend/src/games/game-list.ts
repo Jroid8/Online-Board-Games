@@ -4,7 +4,7 @@ import { Player } from "../player";
 import TicTacToe from "./tic-tac-toe";
 
 const gameList: (GameInfo & (new (players: Player[]) => GameRoom))[] = [
-  TicTacToe,
+	TicTacToe,
 ];
 
 export default gameList;
