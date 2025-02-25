@@ -16,6 +16,7 @@ export const gameMsgCodes = Object.freeze({
 export abstract class GameRoom implements Room {
   protected players: Player[] = [];
   protected playerIndex: Map<number, number> = new Map();
+  protected roomID: bigint;
   private forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
 
   protected broadcastMessage(message: Buffer, excludePlayer?: Player) {
@@ -50,7 +51,9 @@ export abstract class GameRoom implements Room {
   private sendFullJoinMsg(player: Player) {
     player.ws!.send(
       Buffer.concat([
-        Buffer.from([gameMsgCodes.joinedRoom, this.isGameStarted() ? 1 : 0]),
+        Buffer.from([gameMsgCodes.joinedRoom]),
+        Buffer.from(new BigUint64Array([this.roomID])),
+        Buffer.from([this.isGameStarted() ? 1 : 0]),
         this.serializePlayerIDs(player),
         this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
       ]),
@@ -83,6 +86,7 @@ export abstract class GameRoom implements Room {
   }
 
   public constructor(players: Player[]) {
+    this.roomID = BigInt(Date.now());
     this.players = players;
     for (const p of this.players) {
       p.room = this;
