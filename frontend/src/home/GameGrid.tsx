@@ -1,7 +1,7 @@
 import GameCard from "./GameCard";
 import GameInfo from "../common/GameInfo";
 
-export default function GameList({ games }: { games: GameInfo[] }) {
+export default function GameGrid({ games }: { games: GameInfo[] }) {
 	return (
 		<div
 			css={{
