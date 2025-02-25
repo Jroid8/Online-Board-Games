@@ -29,4 +29,12 @@ export default class Hub implements Room {
         break;
     }
   }
+
+  onChat(player: Player, message: Buffer): void {
+		const recipient = globalThis.onlinePlayers.get(message.readUint32BE(1));
+		if (recipient.ws) {
+			message.writeUInt32BE(player.id, 1);
+			recipient.ws.send(message);
+		}
+  }
 }

@@ -132,6 +132,11 @@ export abstract class GameRoom implements Room {
     this.sendFullJoinMsg(player);
   }
 
+  public onChat(player: Player, message: Buffer): void {
+		message.writeUInt32BE(player.id, 1);
+		this.broadcastMessage(message, player);
+	}
+
   abstract onMessage(player: Player, message: Buffer): void;
   abstract begin(): Buffer;
   abstract serializeState(): Buffer;
