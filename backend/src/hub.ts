@@ -24,8 +24,7 @@ export default class Hub implements Room {
         break;
       case hubMsgCodes.createRoom:
         if (gameID >= gameList.length) return;
-        let room = new gameList[gameID]();
-        room.register(player);
+        let room = new gameList[gameID]([player]);
         break;
     }
   }
