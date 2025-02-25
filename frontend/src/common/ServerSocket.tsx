@@ -17,10 +17,9 @@ export default function ServerConnection({
     Cookies.get("session") ? establish() : null,
   );
 
-  function retrieve(): [WebSocket, boolean] {
-		const established = !connState.current;
-    if (!connState.current) connState.current = establish();
-    return [connState.current, established];
+  function retrieve(): WebSocket {
+    if (connState.current) connState.current = establish();
+    return connState.current;
   }
 
   return <ConnectionContext.Provider value={retrieve}>{children}</ConnectionContext.Provider>;

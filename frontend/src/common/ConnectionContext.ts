@@ -1,3 +1,3 @@
 import { createContext } from "react";
 
-export default createContext<null | (() => [WebSocket, boolean])>(null);
+export default createContext<null | (() => WebSocket)>(null);
