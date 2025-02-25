@@ -3,23 +3,30 @@ import addToQueue from "./match-making";
 import { Player } from "./player";
 import Room from "./room";
 
+const hubMsgCodes = Object.freeze({
+  joinRoomWithCode: 0x10,
+  joinMatchMaking: 0x11,
+  createRoom: 0x12,
+  joinWithParty: 0x13,
+
+  createParty: 0xf1,
+  acceptParty: 0xf2,
+  rejectParty: 0xf3,
+});
+
 export default class Hub implements Room {
   onMessage(player: Player, msg: Buffer): void {
     if (msg.length <= 1) return;
     const gameID = msg[1];
     switch (msg[0]) {
-      case 101:
-				addToQueue(player, gameID);
+      case hubMsgCodes.joinMatchMaking:
+        addToQueue(player, gameID);
         break;
-      case 102:
-				if (gameID >= gameList.length) return;
-				let room = new gameList[gameID]();
-				room.register(player);
+      case hubMsgCodes.createRoom:
+        if (gameID >= gameList.length) return;
+        let room = new gameList[gameID]();
+        room.register(player);
         break;
-      case 103:
-        const friend = msg.readUInt32BE(2);
-        // check if they're actually friend
-				// then invite friend
     }
   }
 }

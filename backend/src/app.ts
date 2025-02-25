@@ -9,6 +9,9 @@ import { IncomingHttpHeaders } from "node:http2";
 import Hub from "./hub";
 import { readFile } from "node:fs/promises";
 
+// Global Command Codes:
+// - 0xFE: Message (the recipient depends on room)
+
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, maxPayload: 256 });

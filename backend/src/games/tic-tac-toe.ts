@@ -1,4 +1,4 @@
-import GameRoom from "../game-room";
+import { GameRoom, gameMsgCodes } from "../game-room";
 import { Player } from "../player";
 
 enum BoardSlot {
@@ -51,7 +51,7 @@ export default class TicTacToe extends GameRoom {
     for (const p of this.players) if (p.id != player.id) p.ws!.send(update);
     if (this.checkWin(x, y)) {
       let winMsg = Buffer.alloc(5);
-      winMsg.writeUInt8(235);
+      winMsg.writeUInt8(gameMsgCodes.gameConcluded);
       winMsg.writeUInt32BE(player.id, 1);
       for (const p of this.players) {
         p.ws!.send(winMsg);
