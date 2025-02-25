@@ -1,5 +1,5 @@
 import GameInfo from "../common/GameInfo";
-import GameList from "./GameList";
+import GameGrid from "./GameGrid";
 import SearchSortBar from "./SearchSortBar";
 import { useCallback, useContext, useState } from "react";
 import loading from "/src/common/loading.svg";
@@ -48,7 +48,7 @@ export default function GameCatalog() {
 			}}
 		>
 			<SearchSortBar oninput={filterSort} />
-			{allGames.length == 0 ? loadingDiv : <GameList games={gameList} />}
+			{allGames.length == 0 ? loadingDiv : <GameGrid games={gameList} />}
 		</div>
 	);
 }
