@@ -13,19 +13,19 @@ const target = document.body;
 
 target.style.backgroundColor = randPastelColor(96).toString();
 createRoot(target).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ServerConnection>
-        <ModalManager>
-          <NavBar />
-          <div css={{ flex: 1 }}>
-            <Routes>
-              <Route index element={<Home />} />
-              <Route path="tic-tac-toe/:id" element={<TicTacToe />} />
-            </Routes>
-          </div>
-        </ModalManager>
-      </ServerConnection>
-    </BrowserRouter>
-  </StrictMode>,
+	<StrictMode>
+		<BrowserRouter>
+			<ServerConnection>
+				<ModalManager>
+					<NavBar />
+					<div css={{ flex: 1 }}>
+						<Routes>
+							<Route index element={<Home />} />
+							<Route path="tic-tac-toe/:id" element={<TicTacToe />} />
+						</Routes>
+					</div>
+				</ModalManager>
+			</ServerConnection>
+		</BrowserRouter>
+	</StrictMode>,
 );
