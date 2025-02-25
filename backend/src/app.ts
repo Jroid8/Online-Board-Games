@@ -16,10 +16,11 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, maxPayload: 256 });
 
-const players: Map<number, Player> = new Map();
 const tokenPlayerMap: Map<string, number> = new Map();
 const playerForgetTimeouts: Map<number, NodeJS.Timeout> = new Map();
 let guestCount = 0;
+
+globalThis.onlinePlayers = new Map();
 globalThis.hub = new Hub();
 
 function genSessionToken(): string {
@@ -35,7 +36,7 @@ function createGuestSession(
   let token = genSessionToken();
   let id = guestCount++;
   tokenPlayerMap.set(token, id);
-  players.set(id, {
+  globalThis.onlinePlayers.set(id, {
     id,
     ws: null,
     name: "Guest" + id,
@@ -55,7 +56,7 @@ function createGuestSession(
 function handleChatMsg(sender: Player, msg: Buffer): boolean {
   if (msg[0] != 250) return false;
   if (msg.length > 5) {
-    const recipient = players.get(msg.readUInt32BE(1));
+    const recipient = globalThis.onlinePlayers.get(msg.readUInt32BE(1));
     if (recipient?.ws) {
       msg.writeUInt8(250, 0);
       msg.writeUInt32BE(sender.id, 1);
@@ -78,7 +79,7 @@ wss.on("headers", (headers, req) => {
 
 wss.on("connection", (ws, req) => {
   let token = cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
-  let player = players.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
+  let player = globalThis.onlinePlayers.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
 
   player.ws = ws;
   if (playerForgetTimeouts.get(player.id)) {
@@ -100,7 +101,7 @@ wss.on("connection", (ws, req) => {
       player.id,
       setTimeout(
         () => {
-          players.delete(player.id);
+          globalThis.onlinePlayers.delete(player.id);
           tokenPlayerMap.delete(token);
         },
         1000 * 60 * 60,
