@@ -18,7 +18,7 @@ export default function ServerConnection({
 	);
 
 	function retrieve(): WebSocket {
-		if (connState.current) connState.current = establish();
+		if (!connState.current) connState.current = establish();
 		return connState.current;
 	}
 
