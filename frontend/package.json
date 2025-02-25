@@ -33,7 +33,6 @@
     "vite": "^6.1.0"
   },
 	"prettier": {
-		"tabWidth": 2,
-		"useTabs": false
+		"useTabs": true
 	}
 }
