@@ -19,7 +19,7 @@ createRoot(target).render(
         <div css={{ flex: 1 }}>
           <Routes>
             <Route index element={<Home />} />
-            <Route path="game/tic-tac-toe/:id" element={<TicTacToe />} />
+            <Route path="tic-tac-toe/:id" element={<TicTacToe />} />
           </Routes>
         </div>
       </ModalManager>
