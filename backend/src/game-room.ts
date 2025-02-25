@@ -31,17 +31,21 @@ export abstract class GameRoom implements Room {
     return this.constructor as unknown as GameInfo;
   }
 
-  protected serializePlayerIDs(excludePlayer?: Player): Buffer {
-    const exNum = excludePlayer ? 1 : 0;
-    const buff = Buffer.alloc(1 + (this.players.length - exNum) * 4);
-    let j = 0;
-    buff.writeUInt8(this.players.length - exNum);
+  protected serializePlayerData(excludePlayer?: Player): Buffer {
+    const buffs: Buffer[] = [];
+    const lengthBin = Buffer.alloc(4);
+    lengthBin.writeUInt32LE(this.players.length - (excludePlayer ? 1 : 0), 0);
+    buffs.push(lengthBin);
     for (const p of this.players) {
       if (p.id === excludePlayer?.id) continue;
-      buff.writeUInt32BE(p.id, j * 4 + 3);
-      j++;
+      const idBin = Buffer.alloc(4);
+      idBin.writeUInt32LE(p.id, 0);
+      const nameBin = Buffer.from(p.name, "utf-8");
+      const nameLengthBin = Buffer.alloc(4);
+      nameLengthBin.writeUInt32LE(nameBin.length, 0);
+      buffs.push(idBin, nameLengthBin, nameBin);
     }
-    return buff;
+    return Buffer.concat(buffs);
   }
 
   public isGameStarted(): boolean {
@@ -54,7 +58,7 @@ export abstract class GameRoom implements Room {
         Buffer.from([gameMsgCodes.joinedRoom]),
         Buffer.from(new BigUint64Array([this.roomID])),
         Buffer.from([this.isGameStarted() ? 1 : 0]),
-        this.serializePlayerIDs(player),
+        this.serializePlayerData(player),
         this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
       ]),
     );
