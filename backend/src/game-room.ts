@@ -33,16 +33,14 @@ export abstract class GameRoom implements Room {
 
 	protected serializePlayerData(excludePlayer?: Player): Buffer {
 		const buffs: Buffer[] = [];
-		const lengthBin = Buffer.alloc(4);
-		lengthBin.writeUInt32LE(this.players.length - (excludePlayer ? 1 : 0), 0);
-		buffs.push(lengthBin);
+		buffs.push(Buffer.from([this.players.length - (excludePlayer ? 1 : 0)]));
 		for (const p of this.players) {
 			if (p.id === excludePlayer?.id) continue;
 			const idBin = Buffer.alloc(4);
-			idBin.writeUInt32LE(p.id, 0);
+			idBin.writeUInt32BE(p.id, 0);
 			const nameBin = Buffer.from(p.name, "utf-8");
 			const nameLengthBin = Buffer.alloc(4);
-			nameLengthBin.writeUInt32LE(nameBin.length, 0);
+			nameLengthBin.writeUInt32BE(nameBin.length, 0);
 			buffs.push(idBin, nameLengthBin, nameBin);
 		}
 		return Buffer.concat(buffs);
