@@ -14,6 +14,8 @@ const hubMsgCodes = Object.freeze({
   rejectParty: 0xf3,
 });
 
+globalThis.rooms = new Map();
+
 export default class Hub implements Room {
   onMessage(player: Player, msg: Buffer): void {
     if (msg.length <= 1) return;
@@ -25,6 +27,7 @@ export default class Hub implements Room {
       case hubMsgCodes.createRoom:
         if (gameID >= gameList.length) return;
         let room = new gameList[gameID]([player]);
+				rooms.set(room.id, room);
         break;
     }
   }

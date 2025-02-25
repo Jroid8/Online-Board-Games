@@ -16,7 +16,7 @@ export const gameMsgCodes = Object.freeze({
 export abstract class GameRoom implements Room {
   protected players: Player[] = [];
   protected playerIndex: Map<number, number> = new Map();
-  protected roomID: bigint;
+  public readonly id: bigint;
   private forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
 
   protected broadcastMessage(message: Buffer, excludePlayer?: Player) {
@@ -56,7 +56,7 @@ export abstract class GameRoom implements Room {
     player.ws!.send(
       Buffer.concat([
         Buffer.from([gameMsgCodes.joinedRoom]),
-        Buffer.from(new BigUint64Array([this.roomID])),
+        Buffer.from(new BigUint64Array([this.id])),
         Buffer.from([this.isGameStarted() ? 1 : 0]),
         this.serializePlayerData(player),
         this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
@@ -90,7 +90,7 @@ export abstract class GameRoom implements Room {
   }
 
   public constructor(players: Player[]) {
-    this.roomID = BigInt(Date.now());
+    this.id = BigInt(Date.now());
     this.players = players;
     for (const p of this.players) {
       p.room = this;
@@ -107,6 +107,13 @@ export abstract class GameRoom implements Room {
     this.startGameIfCan();
   }
 
+	public terminate(inform: boolean) {
+		if(inform) this.broadcastMessage(Buffer.from([gameMsgCodes.gameConcluded]));
+		for (const p of this.players) p.room = globalThis.hub;
+		this.players = [];
+		globalThis.rooms.delete(this.id);
+	}
+
   public onDisconnect(player: Player) {
     let disconnectMsg = Buffer.alloc(5);
     disconnectMsg.writeUInt8(gameMsgCodes.otherPlayerDisconnected);
@@ -114,14 +121,7 @@ export abstract class GameRoom implements Room {
     if (this.isGameStarted() && this.playerIndex.get(player.id) !== undefined) {
       this.forfeitTimeouts.set(
         player.id,
-        setTimeout(
-          () => {
-            this.broadcastMessage(Buffer.from([gameMsgCodes.gameConcluded]));
-            for (const p of this.players) p.room = globalThis.hub;
-            this.players = [];
-          },
-          1000 * 60 * 2.5,
-        ),
+        setTimeout(() => this.terminate(true), 1000 * 60 * 2.5),
       );
     } else {
       this.players = this.players.filter((p) => p.id != player.id);
