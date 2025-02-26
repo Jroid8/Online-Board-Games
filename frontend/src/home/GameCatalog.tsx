@@ -2,23 +2,8 @@ import GameInfo from "../common/GameInfo";
 import GameGrid from "./GameGrid";
 import SearchSortBar from "./SearchSortBar";
 import { useCallback, useContext, useState } from "react";
-import loading from "/src/common/loading.svg";
 import GameListCtx from "../contexts/GameListCtx";
-
-const loadingDiv = (
-	<div
-		css={{
-			flexGrow: 1,
-			display: "flex",
-			alignItems: "center",
-			justifyContent: "center",
-			flexDirection: "column",
-		}}
-	>
-		<img src={loading} />
-		Loading Games...
-	</div>
-);
+import LoadingCentered from "../common/LoadingCentered";
 
 export default function GameCatalog() {
 	const allGames = useContext(GameListCtx);
@@ -48,7 +33,11 @@ export default function GameCatalog() {
 			}}
 		>
 			<SearchSortBar oninput={filterSort} />
-			{allGames.length == 0 ? loadingDiv : <GameGrid games={gameList} />}
+			{allGames.length == 0 ? (
+				<LoadingCentered message={"Loading Games ..."} />
+			) : (
+				<GameGrid games={gameList} />
+			)}
 		</div>
 	);
 }
