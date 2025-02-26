@@ -13,6 +13,7 @@ export class GameState {
 
 	private sm: SocketManager;
 	private navigate: (path: string) => void;
+	private startState: ArrayBuffer | null = null;
 
 	constructor(socketManager: SocketManager, navigator: (path: string) => void) {
 		this.sm = socketManager;
@@ -41,6 +42,7 @@ export class GameState {
 			});
 			offset += len;
 		}
+		this.startState = msg.buffer.slice(offset);
 	}
 
 	public async joinMatch(gameID: number, matchID: bigint) {
@@ -52,6 +54,7 @@ export class GameState {
 		const res = await this.sm.fetch(msg.buffer);
 		if (res.getUint8(0) == 0xc0) {
 			this.readJoinMsg(res);
+			this.inMatch = true;
 			this.navigate(
 				"/match/" + this.gameList[gameID].urlName + "/" + this.matchID,
 			);
@@ -62,11 +65,20 @@ export class GameState {
 		}
 	}
 
+	public async getStartState(
+		gameID: number,
+		matchID: bigint,
+	): Promise<DataView<ArrayBuffer>> {
+		if (!this.inMatch) await this.joinMatch(gameID, matchID);
+		return new DataView(this.startState!);
+	}
+
 	private async requestMatch(gameID: number, code: number): Promise<boolean> {
 		await this.sm.waitForOpen();
 		const res = await this.sm.fetch(new Uint8Array([code, gameID]));
 		if (res.getUint8(0) == 0xc0) {
 			this.readJoinMsg(res);
+			this.inMatch = true;
 			this.navigate(
 				"/match/" + this.gameList[gameID].urlName + "/" + this.matchID,
 			);
