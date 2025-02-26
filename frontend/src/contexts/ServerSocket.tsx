@@ -1,30 +1,17 @@
-import { useRef } from "react";
 import Cookies from "js-cookie";
-import ConnectionContext from "./ConnectionContext";
+import { ServerConnCtx, SocketManager } from "./SocketManager";
 
-function establish(): WebSocket {
-	const ws = new WebSocket("ws://" + location.host);
-	ws.binaryType = "arraybuffer";
-	return ws;
-}
-
-export default function ServerConnection({
+export default function ServerSocket({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	const connState = useRef<null | WebSocket>(
-		Cookies.get("session") ? establish() : null,
-	);
-
-	function retrieve(): WebSocket {
-		if (!connState.current) connState.current = establish();
-		return connState.current;
-	}
+	const manager = new SocketManager();
+	if (Cookies.get("session")) manager.connect();
 
 	return (
-		<ConnectionContext.Provider value={retrieve}>
+		<ServerConnCtx.Provider value={manager}>
 			{children}
-		</ConnectionContext.Provider>
+		</ServerConnCtx.Provider>
 	);
 }
