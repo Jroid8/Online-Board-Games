@@ -43,7 +43,7 @@ export class GameState {
 		}
 	}
 
-	private async requestMatch(gameID: number, code: number) {
+	private async requestMatch(gameID: number, code: number): Promise<boolean> {
 		const ws = this.getWS();
 		const res = await socketFetch(ws, new Uint8Array([code, gameID]));
 		if (res.getUint8(0) == 0xc0) {
@@ -51,19 +51,23 @@ export class GameState {
 			this.navigate(
 				"/match/" + this.gameList[gameID].urlName + "/" + this.matchID,
 			);
-		} else alert("Bad server response");
+			return true;
+		} else {
+			alert("Bad server response");
+			return false;
+		}
 	}
 
-	public async reqRandomMatch(gameID: number) {
-		await this.requestMatch(gameID, 0x11);
+	public async reqRandomMatch(gameID: number): Promise<boolean> {
+		return await this.requestMatch(gameID, 0x11);
 	}
 
-	public async reqRoom(gameID: number) {
-		await this.requestMatch(gameID, 0x12);
+	public async reqRoom(gameID: number): Promise<boolean> {
+		return await this.requestMatch(gameID, 0x12);
 	}
 
-	public async reqMatchWithFriends(gameID: number) {
-		await this.requestMatch(gameID, 0x13);
+	public async reqMatchWithFriends(gameID: number): Promise<boolean> {
+		return await this.requestMatch(gameID, 0x13);
 	}
 }
 
