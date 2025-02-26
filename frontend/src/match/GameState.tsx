@@ -43,6 +43,25 @@ export class GameState {
 		}
 	}
 
+	public async joinMatch(gameID: number, matchID: bigint) {
+		await this.sm.waitForOpen();
+		const msg = new DataView(new ArrayBuffer(10));
+		msg.setUint8(0, 0x10);
+		msg.setUint8(1, gameID);
+		msg.setBigUint64(2, matchID);
+		const res = await this.sm.fetch(msg.buffer);
+		if (res.getUint8(0) == 0xc0) {
+			this.readJoinMsg(res);
+			this.navigate(
+				"/match/" + this.gameList[gameID].urlName + "/" + this.matchID,
+			);
+			return true;
+		} else {
+			alert("Bad server response");
+			return false;
+		}
+	}
+
 	private async requestMatch(gameID: number, code: number): Promise<boolean> {
 		await this.sm.waitForOpen();
 		const res = await this.sm.fetch(new Uint8Array([code, gameID]));
