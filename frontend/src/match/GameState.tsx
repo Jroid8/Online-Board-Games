@@ -59,15 +59,15 @@ export class GameState {
 	}
 
 	public async reqRandomMatch(gameID: number): Promise<boolean> {
-		return await this.requestMatch(gameID, 0x11);
+		return this.requestMatch(gameID, 0x11);
 	}
 
 	public async reqRoom(gameID: number): Promise<boolean> {
-		return await this.requestMatch(gameID, 0x12);
+		return this.requestMatch(gameID, 0x12);
 	}
 
 	public async reqMatchWithFriends(gameID: number): Promise<boolean> {
-		return await this.requestMatch(gameID, 0x13);
+		return this.requestMatch(gameID, 0x13);
 	}
 }
 
