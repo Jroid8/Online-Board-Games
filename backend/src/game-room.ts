@@ -77,8 +77,12 @@ export abstract class GameRoom implements Room {
 	private startGameIfCan() {
 		if (this.players.length == this.staticFields().playerCount) {
 			this.initPlayerIndex();
+			this.begin();
 			this.broadcastMessage(
-				Buffer.concat([Buffer.from([gameMsgCodes.gameStarted]), this.begin()]),
+				Buffer.concat([
+					Buffer.from([gameMsgCodes.gameStarted]),
+					this.serializeState(),
+				]),
 			);
 		}
 	}
@@ -94,7 +98,10 @@ export abstract class GameRoom implements Room {
 			p.room = this;
 			this.sendFullJoinMsg(p);
 		}
-		if (this.isGameStarted()) this.initPlayerIndex();
+		if (this.isGameStarted()) {
+			this.initPlayerIndex();
+			this.begin();
+		}
 	}
 
 	public register(player: Player) {
@@ -141,6 +148,6 @@ export abstract class GameRoom implements Room {
 	}
 
 	abstract onMessage(player: Player, message: Buffer): void;
-	abstract begin(): Buffer;
+	abstract begin(): void;
 	abstract serializeState(): Buffer;
 }
