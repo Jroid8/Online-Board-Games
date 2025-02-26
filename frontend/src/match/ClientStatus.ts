@@ -1,8 +1,21 @@
 import { create } from "zustand";
 import PlayerInfo from "../common/PlayerInfo";
 import { socketFetch } from "../common/SocketUtils";
+import {
+	deserialize as deserTicTacToe,
+	TicTacToeState,
+} from "./TicTacToe/states";
 
-export enum Status {
+type AvailableGameStates = TicTacToeState;
+
+const gameStateDeser: Record<
+	number,
+	(data: ArrayBuffer) => AvailableGameStates
+> = {
+	0: (data) => deserTicTacToe(new DataView(data)),
+};
+
+export enum State {
 	Disconnected,
 	InHub,
 	InGameNotStarted,
@@ -10,36 +23,38 @@ export enum Status {
 }
 
 export interface Disconnected {
-	status: Status.Disconnected;
-}
+	state: State.Disconnected;
+};
 
 export interface InHub {
-	status: Status.InHub;
+	state: State.InHub;
 	socket: WebSocket;
-}
+};
 
 export interface InGameNotStarted {
-	status: Status.InGameNotStarted;
+	state: State.InGameNotStarted;
 	socket: WebSocket;
 	players: PlayerInfo[];
 	matchID: bigint;
 	gameID: number;
-}
+};
 
 export interface Playing {
-	status: Status.Playing;
+	state: State.Playing;
 	socket: WebSocket;
 	players: PlayerInfo[];
 	matchID: bigint;
 	gameID: number;
-	startSerState: ArrayBuffer;
 	paused: boolean;
-}
+};
 
-export type PossibleStates = Disconnected | InHub | InGameNotStarted | Playing;
+export type PossibleStates =
+	| Disconnected
+	| InHub
+	| InGameNotStarted
+	| (Playing & TicTacToeState);
 
-export interface StateStore {
-	state: PossibleStates;
+export type StateStore = {
 	connect: () => Promise<void>;
 	joinMatch: (
 		gameID: number,
@@ -53,12 +68,12 @@ export interface StateStore {
 		gameURLName: string,
 		navigate: (path: string) => void,
 	) => Promise<void>;
-}
+} & PossibleStates;
 
 export const useStateStore = create<StateStore>()((set, get) => {
 	function readJoinMsg(msg: DataView<ArrayBuffer>, gameID: number): bigint {
-		const current = get().state;
-		if (current.status !== Status.InHub) return 0n;
+		const current = get();
+		if (current.state !== State.InHub) return 0n;
 		const decoder = new TextDecoder("utf-8");
 		const matchID = msg.getBigUint64(1);
 		const waiting = msg.getUint8(9) == 0;
@@ -76,23 +91,24 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			});
 			offset += len;
 		}
+		const gameState = gameStateDeser[gameID](msg.buffer.slice(offset));
 		const ingame: InGameNotStarted = {
-			status: Status.InGameNotStarted,
+			state: State.InGameNotStarted,
 			socket: current.socket,
 			players,
 			matchID,
 			gameID,
 		};
-		set({
-			state: waiting
+		set(
+			waiting
 				? ingame
 				: {
 						...ingame,
-						status: Status.Playing,
-						startSerState: msg.buffer.slice(offset),
+						...gameState,
+						state: State.Playing,
 						paused: false,
 					},
-		});
+		);
 		return matchID;
 	}
 
@@ -116,14 +132,14 @@ export const useStateStore = create<StateStore>()((set, get) => {
 	}
 
 	return {
-		state: { status: Status.Disconnected },
+		state: State.Disconnected,
 		connect: async () => {
-			if (get().state.status === Status.Disconnected)
-				set({ state: { status: Status.InHub, socket: await establish() } });
+			if (get().state === State.Disconnected)
+				set({ state: State.InHub, socket: await establish() });
 		},
 		joinMatch: async (gameID: number, matchID: bigint) => {
-			const { state } = get();
-			if (state.status !== Status.InHub) return;
+			const state = get();
+			if (state.state !== State.InHub) return;
 			const msg = new DataView(new ArrayBuffer(10));
 			msg.setUint8(0, 0x10);
 			msg.setUint8(1, gameID);
@@ -141,8 +157,8 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			gameURLName: string,
 			navigate: (path: string) => void,
 		) => {
-			const { state } = get();
-			if (state.status !== Status.InHub) return;
+			const state = get();
+			if (state.state !== State.InHub) return;
 			const res = await socketFetch(
 				state.socket,
 				new Uint8Array([matchTypeCode, gameID]),
