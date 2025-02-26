@@ -8,7 +8,6 @@ import NavBar from "./navbar/NavBar.tsx";
 import ModalManager from "./modal/ModalManager.tsx";
 import ServerSocket from "./contexts/ServerSocket.tsx";
 import GameListProvider from "./contexts/GameListProvider.tsx";
-import GameManager from "./match/GameManager.tsx";
 
 const target = document.body;
 
@@ -18,16 +17,14 @@ createRoot(target).render(
 		<GameListProvider>
 			<BrowserRouter>
 				<ServerSocket>
-					<GameManager>
-						<ModalManager>
-							<NavBar />
-							<div css={{ flex: 1 }}>
-								<Routes>
-									<Route index element={<Home />} />
-								</Routes>
-							</div>
-						</ModalManager>
-					</GameManager>
+					<ModalManager>
+						<NavBar />
+						<div css={{ flex: 1 }}>
+							<Routes>
+								<Route index element={<Home />} />
+							</Routes>
+						</div>
+					</ModalManager>
 				</ServerSocket>
 			</BrowserRouter>
 		</GameListProvider>

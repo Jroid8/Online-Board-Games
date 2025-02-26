@@ -4,9 +4,10 @@ import Cookies from "js-cookie";
 import PastelFloatBtn from "../common/PastelFloatBtn";
 import CommonModalCSS from "../modal/CommonModalCSS";
 import { css } from "@emotion/react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import loading from "../common/loading.svg";
-import { GameContext } from "../match/GameState";
+import { useStateStore } from "../match/ClientState";
+import { useNavigate } from "react-router";
 
 const closeButtonCSS = css({
 	"&&": {
@@ -36,28 +37,26 @@ export default function MatchMenu({
 	info: GameInfo;
 	close: () => void;
 }) {
+	const requestMatch = useStateStore((store) => store.requestMatch);
+	const navigate = useNavigate();
 	const [choice, choose] = useState(0);
-	const gameState = useContext(GameContext)!;
 
 	async function reqRandomMatch() {
 		if (choice > 0) return;
 		choose(1);
-		if(!await gameState.reqRandomMatch(info.id))
-			choose(0);
+		await requestMatch(info.id, 0x11, info.urlName, navigate);
 	}
 
 	async function reqRoom() {
 		if (choice > 0) return;
 		choose(2);
-		if(!await gameState.reqRoom(info.id))
-			choose(0);
+		await requestMatch(info.id, 0x12, info.urlName, navigate);
 	}
 
 	async function inviteFriend() {
 		if (choice > 0) return;
 		choose(3);
-		if(!await gameState.reqMatchWithFriends(info.id))
-			choose(0);
+		await requestMatch(info.id, 0x13, info.urlName, navigate);
 	}
 
 	return (
