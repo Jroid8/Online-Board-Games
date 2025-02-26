@@ -12,15 +12,15 @@ export default class TicTacToe extends GameRoom {
 	static playerCount: number = 2;
 	static gameName: string = "Tic-Tac-Toe";
 
+	playerX: number = 0;
 	board: BoardSlot[][];
-	turn: number;
+	turn: number = 0;
 
 	constructor(players: Player[]) {
 		super(players);
 		this.board = Array.from({ length: 3 }, () =>
 			new Array(3).fill(BoardSlot.Empty),
 		);
-		this.turn = 0;
 	}
 
 	checkWin(x: number, y: number): boolean {
@@ -43,12 +43,14 @@ export default class TicTacToe extends GameRoom {
 		const [x, y] = [msg[1] % 3, Math.floor(msg[1] / 3)];
 		if (playerIndex !== this.turn || this.board[y][x] != BoardSlot.Empty)
 			return;
-		this.board[y][x] = playerIndex ? BoardSlot.O : BoardSlot.X;
+
+		this.board[y][x] = player.id == this.playerX ? BoardSlot.X : BoardSlot.O;
 		let update = Buffer.alloc(6);
 		update.writeUInt8(1);
 		update.writeUInt32BE(player.id, 1);
 		update.writeUInt8(msg[1], 5);
-		for (const p of this.players) if (p.id != player.id) p.ws!.send(update);
+		this.broadcastMessage(update, player);
+
 		if (this.checkWin(x, y)) {
 			let winMsg = Buffer.alloc(5);
 			winMsg.writeUInt8(gameMsgCodes.gameConcluded);
@@ -57,24 +59,21 @@ export default class TicTacToe extends GameRoom {
 				p.ws!.send(winMsg);
 				p.room = globalThis.hub;
 			}
-		} else {
-			player.ws!.send(Buffer.from([220]));
+		} else
 			this.turn = 1 - this.turn;
-		}
-	}
-
-	begin(): Buffer {
-		if (Math.random() > 0.5) this.players.reverse();
-		let state = Buffer.alloc(8);
-		for (let i = 0; i < this.players.length; i++)
-			state.writeUInt32BE(this.players[i].id, i * 4);
-		return state;
 	}
 
 	serializeState(): Buffer {
-		let state = Buffer.alloc(9);
-		for (let i = 0; i < this.players.length; i++)
-			state.writeUInt8(this.board[Math.floor(i / 3)][i % 3], i);
+		let state = Buffer.alloc(4 + 9);
+		state.writeUInt32BE(this.playerX);
+		for (let i = 0; i < 9; i++)
+			state.writeUInt8(this.board[Math.floor(i / 3)][i % 3], i + 4);
 		return state;
+	}
+
+	begin() {
+		const idx = Math.floor(Math.random() * 2)
+		this.playerX = this.players[idx].id;
+		this.turn = idx;
 	}
 }
