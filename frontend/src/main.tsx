@@ -6,7 +6,7 @@ import Home from "./home/index.tsx";
 import randPastelColor from "./common/RandPastelColor.ts";
 import NavBar from "./navbar/NavBar.tsx";
 import ModalManager from "./modal/ModalManager.tsx";
-import ServerConnection from "./common/ServerSocket.tsx";
+import ServerConnection from "./contexts/ServerSocket.tsx";
 import GameListProvider from "./contexts/GameListProvider.tsx";
 
 const target = document.body;
