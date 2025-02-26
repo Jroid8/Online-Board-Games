@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from "react";
 import { GameContext, GameState } from "./GameState";
-import ConnectionContext from "../contexts/ConnectionContext";
+import {ServerConnCtx} from "../contexts/SocketManager";
 import { useNavigate } from "react-router";
 import GameListCtx from "../contexts/GameListCtx";
 
@@ -9,10 +9,10 @@ export default function GameManager({
 }: {
 	children: React.ReactNode;
 }) {
-	const ws = useContext(ConnectionContext)!;
+	const socketManager = useContext(ServerConnCtx)!;
 	const gameList = useContext(GameListCtx);
 	const navigate = useNavigate();
-	const gameState = useRef(new GameState(ws, navigate));
+	const gameState = useRef(new GameState(socketManager, navigate));
 
 	useEffect(() => {
 		gameState.current.gameListResolved(gameList);

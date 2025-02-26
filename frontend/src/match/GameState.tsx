@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import PlayerInfo from "../common/PlayerInfo";
-import { socketFetch } from "../common/SocketUtils";
 import GameInfo from "../common/GameInfo";
+import { SocketManager } from "../contexts/SocketManager";
 
 export class GameState {
 	public players: PlayerInfo[] = [];
@@ -11,11 +11,11 @@ export class GameState {
 	public gameID: number = -1;
 	public gameList: GameInfo[] = [];
 
-	private getWS: () => WebSocket;
+	private sm: SocketManager;
 	private navigate: (path: string) => void;
 
-	constructor(wsSingleton: () => WebSocket, navigator: (path: string) => void) {
-		this.getWS = wsSingleton;
+	constructor(socketManager: SocketManager, navigator: (path: string) => void) {
+		this.sm = socketManager;
 		this.navigate = navigator;
 	}
 
@@ -44,8 +44,8 @@ export class GameState {
 	}
 
 	private async requestMatch(gameID: number, code: number): Promise<boolean> {
-		const ws = this.getWS();
-		const res = await socketFetch(ws, new Uint8Array([code, gameID]));
+		await this.sm.waitForOpen();
+		const res = await this.sm.fetch(new Uint8Array([code, gameID]));
 		if (res.getUint8(0) == 0xc0) {
 			this.readJoinMsg(res);
 			this.navigate(
