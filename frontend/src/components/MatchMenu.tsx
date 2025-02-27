@@ -51,6 +51,7 @@ export default function MatchMenu({
 			info.urlName,
 			navigate,
 		);
+		close();
 	}
 
 	async function reqRoom() {
@@ -62,6 +63,7 @@ export default function MatchMenu({
 			info.urlName,
 			navigate,
 		);
+		close();
 	}
 
 	async function inviteFriend() {
@@ -73,6 +75,7 @@ export default function MatchMenu({
 			info.urlName,
 			navigate,
 		);
+		close();
 	}
 
 	return (
