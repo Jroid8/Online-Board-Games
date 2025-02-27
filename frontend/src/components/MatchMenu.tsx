@@ -8,6 +8,7 @@ import { useState } from "react";
 import loading from "../utils/loading.svg";
 import { useStateStore } from "../game/ClientState";
 import { useNavigate } from "react-router";
+import MsgCodes from "../utils/MessageCodes";
 
 const closeButtonCSS = css({
 	"&&": {
@@ -44,19 +45,34 @@ export default function MatchMenu({
 	async function reqRandomMatch() {
 		if (choice > 0) return;
 		choose(1);
-		await requestMatch(info.id, 0x11, info.urlName, navigate);
+		await requestMatch(
+			info.id,
+			MsgCodes.hub.joinMatchMaking,
+			info.urlName,
+			navigate,
+		);
 	}
 
 	async function reqRoom() {
 		if (choice > 0) return;
 		choose(2);
-		await requestMatch(info.id, 0x12, info.urlName, navigate);
+		await requestMatch(
+			info.id,
+			MsgCodes.hub.createRoom,
+			info.urlName,
+			navigate,
+		);
 	}
 
 	async function inviteFriend() {
 		if (choice > 0) return;
 		choose(3);
-		await requestMatch(info.id, 0x13, info.urlName, navigate);
+		await requestMatch(
+			info.id,
+			MsgCodes.hub.joinWithParty,
+			info.urlName,
+			navigate,
+		);
 	}
 
 	return (
