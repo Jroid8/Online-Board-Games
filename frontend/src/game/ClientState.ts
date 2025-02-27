@@ -7,6 +7,7 @@ import {
 } from "./TicTacToe/states";
 import MsgCodes from "../utils/MessageCodes";
 import ticTacToeListener from "./TicTacToe/listener";
+import Cookies from "js-cookie";
 
 type AvailableGameStates = TicTacToeState;
 
@@ -35,11 +36,13 @@ export interface Disconnected {
 export interface InHub {
 	state: State.InHub;
 	socket: WebSocket;
+	user: PlayerInfo;
 }
 
 export interface InGameNotStarted {
 	state: State.InGameNotStarted;
 	socket: WebSocket;
+	user: PlayerInfo;
 	players: PlayerInfo[];
 	matchID: bigint;
 	gameID: number;
@@ -48,6 +51,7 @@ export interface InGameNotStarted {
 export interface Playing {
 	state: State.Playing;
 	socket: WebSocket;
+	user: PlayerInfo;
 	players: PlayerInfo[];
 	matchID: bigint;
 	gameID: number;
@@ -186,6 +190,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		const ingame: InGameNotStarted = {
 			state: State.InGameNotStarted,
 			socket: current.socket,
+			user: current.user,
 			players,
 			matchID,
 			gameID,
@@ -208,13 +213,24 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		state: State.Disconnected,
 		connect: () => {
 			if (get().state !== State.Disconnected) return;
+			const isGuest = !Cookies.get("session");
 			const ws = new WebSocket("ws://" + location.host);
 			ws.binaryType = "arraybuffer";
 			ws.onopen = () => {
-				set({ state: State.InHub, socket: ws });
 				ws.onopen = null;
-				ws.onmessage = commonMsgListener;
-				ws.onerror = ws.onclose = socketError;
+				ws.onmessage = (ev) => {
+					const playerID = new DataView(ev.data).getUint32(0);
+					ws.onmessage = commonMsgListener;
+					ws.onerror = ws.onclose = socketError;
+					set({
+						state: State.InHub,
+						socket: ws,
+						user: {
+							id: playerID,
+							name: isGuest ? "Guest" + playerID : "#TODO",
+						},
+					});
+				};
 			};
 			ws.onerror = ws.onclose = () => {
 				console.error("Failed to connect to server");
