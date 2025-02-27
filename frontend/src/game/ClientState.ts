@@ -5,6 +5,7 @@ import {
 	deserialize as deserTicTacToe,
 	TicTacToeState,
 } from "./TicTacToe/states";
+import MsgCodes from "../utils/MessageCodes";
 
 type AvailableGameStates = TicTacToeState;
 
@@ -101,6 +102,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			matchID,
 			gameID,
 		};
+		current.socket.addEventListener("message", gameMsgListener);
 		set(
 			waiting
 				? ingame
@@ -147,11 +149,9 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			msg.setUint8(1, gameID);
 			msg.setBigUint64(2, matchID);
 			const res = await socketFetch(state.socket, msg.buffer);
-			if (res.getUint8(0) == 0xc0) {
+			if (res.getUint8(0) == MsgCodes.game.joinedRoom) {
 				readJoinMsg(res, gameID);
-			} else {
-				alert("Invalid server response");
-			}
+			} else alert("Invalid server response");
 		},
 		requestMatch: async (
 			gameID: number,
@@ -165,11 +165,11 @@ export const useStateStore = create<StateStore>()((set, get) => {
 				state.socket,
 				new Uint8Array([matchTypeCode, gameID]),
 			);
-			if (res.getUint8(0) == 0xc0) {
+			if (res.getUint8(0) == MsgCodes.game.joinedRoom) {
 				navigate(
 					"/game/" + gameURLName + "/" + readJoinMsg(res, gameID).toString(),
 				);
-			}
+			} else alert("Invalid server response");
 		},
 	};
 });
