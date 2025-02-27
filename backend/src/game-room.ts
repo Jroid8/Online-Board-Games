@@ -55,10 +55,12 @@ export abstract class GameRoom implements Room {
 	}
 
 	private sendFullJoinMsg(player: Player) {
+		const serRoomID = Buffer.alloc(8);
+		serRoomID.writeBigUint64BE(this.id);
 		player.ws!.send(
 			Buffer.concat([
 				Buffer.from([gameMsgCodes.joinedRoom]),
-				Buffer.from(new BigUint64Array([this.id])),
+				serRoomID,
 				Buffer.from([this.isGameStarted() ? 1 : 0]),
 				this.serializeAllPlayerData(player),
 				this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
