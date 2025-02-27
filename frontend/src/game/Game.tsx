@@ -37,10 +37,8 @@ function Banner({
 	);
 }
 
-const TEST: State = State.Playing;
-
 export default function Game() {
-	const state = TEST;//useStateStore((store) => store.state);
+	const state = useStateStore((store) => store.state);
 	const paused = useStateStore((store) => (store as Playing).paused);
 
 	let game = <LoadingCentered message={"Connecting..."} />;
