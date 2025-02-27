@@ -24,12 +24,12 @@ export enum State {
 
 export interface Disconnected {
 	state: State.Disconnected;
-};
+}
 
 export interface InHub {
 	state: State.InHub;
 	socket: WebSocket;
-};
+}
 
 export interface InGameNotStarted {
 	state: State.InGameNotStarted;
@@ -37,7 +37,7 @@ export interface InGameNotStarted {
 	players: PlayerInfo[];
 	matchID: bigint;
 	gameID: number;
-};
+}
 
 export interface Playing {
 	state: State.Playing;
@@ -46,7 +46,7 @@ export interface Playing {
 	matchID: bigint;
 	gameID: number;
 	paused: boolean;
-};
+}
 
 export type PossibleStates =
 	| Disconnected
@@ -91,7 +91,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			});
 			offset += len;
 		}
-		const gameState = gameStateDeser[gameID](msg.buffer.slice(offset));
+		const gameState = waiting ? gameStateDeser[gameID](msg.buffer.slice(offset)) : undefined;
 		const ingame: InGameNotStarted = {
 			state: State.InGameNotStarted,
 			socket: current.socket,
