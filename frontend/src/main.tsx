@@ -22,7 +22,7 @@ createRoot(target).render(
 					<Routes>
 						<Route index element={<GameCatalog />} />
 						<Route path="game" element={<Game />}>
-							<Route path="tic-tac-toe" element={<TicTacToe />} />
+							<Route path="tic-tac-toe/:id" element={<TicTacToe />} />
 						</Route>
 					</Routes>
 				</ModalManager>
