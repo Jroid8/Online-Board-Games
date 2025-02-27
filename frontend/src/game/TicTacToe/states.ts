@@ -40,7 +40,7 @@ export function deserialize(
 	data: DataView<ArrayBuffer>,
 ): TicTacToeState {
 	const board: Cell[] = [];
-	for (let i = 0; i < 9; i++) board[i] = deserCell(data.getInt8(i + 1));
+	for (let i = 0; i < 9; i++) board[i] = deserCell(data.getInt8(i + 4));
 	const xPlayer = data.getUint32(0);
 	return {
 		myMark: xPlayer === current.user.id ? Cell.X : Cell.O,
