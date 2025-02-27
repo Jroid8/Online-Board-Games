@@ -1,3 +1,5 @@
+import { InHub, Playing } from "../ClientState";
+
 export enum Cell {
 	Empty,
 	X,
@@ -15,17 +17,34 @@ function deserCell(value: number): Cell {
 	}
 }
 
+export type CurrentState = Playing & TicTacToeState;
+
 export interface TicTacToeState {
-	xPlayer: number;
-	board: Cell[][];
+	myMark: Cell;
+	board: Cell[];
+	myTurn: boolean;
 }
 
-export function deserialize(data: DataView<ArrayBuffer>): TicTacToeState {
-	const board: Cell[][] = [];
-	for (let i = 0; i < 9; i++) {
-		const y = Math.floor(i / 3);
-		if (i % 3 == 0) board[y] = [];
-		board[y][i % 3] = deserCell(data.getInt8(i + 1));
-	}
-	return { xPlayer: data.getUint32(0), board };
+export function markCell(
+	current: CurrentState,
+	setState: (state: Partial<CurrentState>) => void,
+	index: number,
+) {
+	const newBoard = current.board.slice();
+	newBoard[index] = current.myMark;
+	setState({ board: newBoard, myTurn: false });
+}
+
+export function deserialize(
+	current: Omit<InHub, "state">,
+	data: DataView<ArrayBuffer>,
+): TicTacToeState {
+	const board: Cell[] = [];
+	for (let i = 0; i < 9; i++) board[i] = deserCell(data.getInt8(i + 1));
+	const xPlayer = data.getUint32(0);
+	return {
+		myMark: xPlayer === current.user.id ? Cell.X : Cell.O,
+		board,
+		myTurn: current.user.id === xPlayer,
+	};
 }

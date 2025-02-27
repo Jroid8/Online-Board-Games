@@ -13,9 +13,9 @@ type AvailableGameStates = TicTacToeState;
 
 const gameStateDeser: Record<
 	number,
-	(data: ArrayBuffer) => AvailableGameStates
+	(current: Omit<InHub, "state">, data: ArrayBuffer) => AvailableGameStates
 > = {
-	0: (data) => deserTicTacToe(new DataView(data)),
+	0: (current, data) => deserTicTacToe(current, new DataView(data)),
 };
 
 const gameMsgListener: Record<number, (event: MessageEvent) => void> = {
@@ -109,7 +109,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						gameMsgListener[current.gameID],
 					);
 					set({
-						...gameStateDeser[current.gameID](msg.buffer.slice(1)),
+						...gameStateDeser[current.gameID](current, msg.buffer.slice(1)),
 						state: State.Playing,
 						paused: false,
 						listener: gameMsgListener[current.gameID],
@@ -184,7 +184,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		}
 		const gameState = waiting
 			? undefined
-			: gameStateDeser[gameID](msg.buffer.slice(offset));
+			: gameStateDeser[gameID](current, msg.buffer.slice(offset));
 		if (!waiting)
 			current.socket.addEventListener("message", gameMsgListener[gameID]);
 		const ingame: InGameNotStarted = {

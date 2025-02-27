@@ -1,44 +1,58 @@
-import { useStateStore } from "../ClientState";
-import { Cell } from "./states";
+import { State, useStateStore } from "../ClientState";
+import { Cell, CurrentState, markCell } from "./states";
 import xSVG from "./xmark.svg";
 import oSVG from "./omark.svg";
-import randPastelColor from "../../utils/RandPastelColor";
 
 function Slot({ value, onClick }: { value: Cell; onClick: () => void }) {
-	let img = "";
+	let src = null;
 	switch (value) {
 		case Cell.X:
-			img = xSVG;
+			src = xSVG;
 			break;
 		case Cell.O:
-			img = oSVG;
+			src = oSVG;
 			break;
 	}
+	const img = src ? (
+		<img
+			src={src}
+			css={{
+				height: "70%",
+				display: "block",
+				marginLeft: "auto",
+				marginRight: "auto",
+			}}
+		/>
+	) : (
+		<></>
+	);
 	return (
 		<button
 			css={{
 				backgroundColor: "white",
 				borderRadius: "2vmin",
 				border: "none",
-				boxShadow: "0 0 25px #aaa"
+				boxShadow: "0 0 25px #aaa",
 			}}
 			onClick={onClick}
 		>
-			<img
-				src={img}
-				css={{
-					height: "70%",
-					display: "block",
-					marginLeft: "auto",
-					marginRight: "auto",
-				}}
-			/>
+			{img}
 		</button>
 	);
 }
 
+const emptyBoard = new Array(9).fill(Cell.Empty);
+
 export default function TicTacToe() {
-	// const state = useStateStore();
+	const board = useStateStore((state) =>
+		state.state === State.Playing ? state.board : emptyBoard,
+	);
+
+	function handleClick(index: number) {
+		const current = useStateStore.getState() as CurrentState;
+		if (current.myTurn) markCell(current, useStateStore.setState, index);
+	}
+
 	return (
 		<div
 			css={{
@@ -49,15 +63,9 @@ export default function TicTacToe() {
 				gap: "3vmin",
 			}}
 		>
-			<Slot value={1} onClick={() => {}} />
-			<Slot value={0} onClick={() => {}} />
-			<Slot value={1} onClick={() => {}} />
-			<Slot value={1} onClick={() => {}} />
-			<Slot value={2} onClick={() => {}} />
-			<Slot value={2} onClick={() => {}} />
-			<Slot value={2} onClick={() => {}} />
-			<Slot value={0} onClick={() => {}} />
-			<Slot value={0} onClick={() => {}} />
+			{board.map((c, i) => (
+				<Slot key={i} value={c} onClick={() => handleClick(i)} />
+			))}
 		</div>
 	);
 }
