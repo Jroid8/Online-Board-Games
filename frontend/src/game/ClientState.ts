@@ -6,6 +6,7 @@ import {
 	TicTacToeState,
 } from "./TicTacToe/states";
 import MsgCodes from "../utils/MessageCodes";
+import ticTacToeListener from "./TicTacToe/listener";
 
 type AvailableGameStates = TicTacToeState;
 
@@ -14,6 +15,10 @@ const gameStateDeser: Record<
 	(data: ArrayBuffer) => AvailableGameStates
 > = {
 	0: (data) => deserTicTacToe(new DataView(data)),
+};
+
+const gameMsgListener: Record<number, (event: MessageEvent) => void> = {
+	0: (event) => ticTacToeListener(new DataView(event.data)),
 };
 
 export enum State {
@@ -47,6 +52,7 @@ export interface Playing {
 	matchID: bigint;
 	gameID: number;
 	paused: boolean;
+	listener: (event: MessageEvent) => void;
 }
 
 export type PossibleStates =
@@ -94,10 +100,15 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		if (current.state === State.InGameNotStarted) {
 			switch (msg.getUint8(0)) {
 				case MsgCodes.game.gameStarted:
+					current.socket.addEventListener(
+						"message",
+						gameMsgListener[current.gameID],
+					);
 					set({
 						...gameStateDeser[current.gameID](msg.buffer.slice(1)),
 						state: State.Playing,
 						paused: false,
+						listener: gameMsgListener[current.gameID],
 					});
 					break;
 				case MsgCodes.game.otherPlayerJoinedRoom:
@@ -168,8 +179,10 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			offset = o;
 		}
 		const gameState = waiting
-			? gameStateDeser[gameID](msg.buffer.slice(offset))
-			: undefined;
+			? undefined
+			: gameStateDeser[gameID](msg.buffer.slice(offset));
+		if (!waiting)
+			current.socket.addEventListener("message", gameMsgListener[gameID]);
 		const ingame: InGameNotStarted = {
 			state: State.InGameNotStarted,
 			socket: current.socket,
@@ -185,6 +198,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						...gameState,
 						state: State.Playing,
 						paused: false,
+						listener: gameMsgListener[gameID],
 					},
 		);
 		return matchID;
