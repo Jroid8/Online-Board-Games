@@ -41,8 +41,10 @@ export abstract class GameRoom implements Room {
 	}
 
 	protected serializeAllPlayerData(excludePlayer?: Player): Buffer {
+		const excNum = excludePlayer ? 1 : 0;
+		if (this.players.length - excNum <= 0) return Buffer.from([0]);
 		const buffs: Buffer[] = [];
-		buffs.push(Buffer.from([this.players.length - (excludePlayer ? 1 : 0)]));
+		buffs.push(Buffer.from([this.players.length - excNum]));
 		for (const p of this.players) {
 			if (p.id === excludePlayer?.id) continue;
 			buffs.push(GameRoom.serializePlayerData(p));
