@@ -56,7 +56,7 @@ export type PossibleStates =
 	| (Playing & TicTacToeState);
 
 export type StateStore = {
-	connect: () => Promise<void>;
+	connect: () => void;
 	joinMatch: (
 		gameID: number,
 		matchID: bigint,
@@ -88,7 +88,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		return [player, offset + len];
 	}
 
-	function gameMsgListener(event: MessageEvent) {
+	function commonMsgListener(event: MessageEvent) {
 		const msg = new DataView(event.data);
 		const current = get();
 		if (current.state === State.InGameNotStarted) {
@@ -137,11 +137,12 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			Object.entries(current).filter((e) => typeof e[1] === "function"),
 		);
 		// also redirect
-		current.socket.removeEventListener("message", gameMsgListener);
 		switch (target) {
 			case State.Disconnected:
-				current.socket.removeEventListener("error", socketError);
-				current.socket.removeEventListener("close", socketError);
+				current.socket.onmessage =
+					current.socket.onclose =
+					current.socket.onerror =
+						null;
 				return set({ ...funcs, state: State.Disconnected });
 			case State.InHub:
 				return set({ ...funcs, state: State.InHub, socket: current.socket });
@@ -176,9 +177,6 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			matchID,
 			gameID,
 		};
-		current.socket.addEventListener("message", gameMsgListener);
-		current.socket.addEventListener("error", socketError);
-		current.socket.addEventListener("close", socketError);
 		set(
 			waiting
 				? ingame
@@ -192,30 +190,21 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		return matchID;
 	}
 
-	async function establish(): Promise<WebSocket> {
-		const ws = new WebSocket("ws://" + location.host);
-		ws.binaryType = "arraybuffer";
-		return new Promise((resolve, reject) => {
-			ws.onopen = function onOpen() {
-				resolve(ws);
-				ws.onclose = ws.onerror = ws.onopen = null;
-			};
-			ws.onclose = (ev: CloseEvent) => {
-				reject(ev.reason);
-				ws.onclose = ws.onerror = ws.onopen = null;
-			};
-			ws.onerror = () => {
-				reject();
-				ws.onclose = ws.onerror = ws.onopen = null;
-			};
-		});
-	}
-
 	return {
 		state: State.Disconnected,
-		connect: async () => {
-			if (get().state === State.Disconnected)
-				set({ state: State.InHub, socket: await establish() });
+		connect: () => {
+			if (get().state !== State.Disconnected) return;
+			const ws = new WebSocket("ws://" + location.host);
+			ws.binaryType = "arraybuffer";
+			ws.onopen = () => {
+				set({ state: State.InHub, socket: ws });
+				ws.onopen = null;
+				ws.onmessage = commonMsgListener;
+				ws.onerror = ws.onclose = socketError;
+			};
+			ws.onerror = ws.onclose = () => {
+				console.error("Failed to connect to server");
+			};
 		},
 		joinMatch: async (gameID: number, matchID: bigint) => {
 			const state = get();
