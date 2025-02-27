@@ -115,15 +115,15 @@ export abstract class GameRoom implements Room {
 	}
 
 	public addPlayers(players: Player[]) {
-		for (const p of players) {
-			p.room = this;
-			this.sendFullJoinMsg(p);
-			this.informPlayerJoin(p);
-		}
 		this.players = this.players.concat(players);
 		if (this.isGameStarted()) {
 			this.initPlayerIndex();
 			this.begin();
+		}
+		for (const p of players) {
+			p.room = this;
+			this.sendFullJoinMsg(p);
+			// this.informPlayerJoin(p);
 		}
 	}
 
