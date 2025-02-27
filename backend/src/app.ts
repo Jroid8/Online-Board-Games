@@ -78,6 +78,12 @@ wss.on("headers", (headers, req) => {
 	}
 });
 
+function sendUserInfo(player: Player) {
+	const serPlayerID = Buffer.alloc(4);
+	serPlayerID.writeInt32BE(player.id);
+	player.ws!.send(serPlayerID);
+}
+
 wss.on("connection", (ws, req) => {
 	let token = cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
 	let player = globalThis.onlinePlayers.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
@@ -88,7 +94,7 @@ wss.on("connection", (ws, req) => {
 		if (player.room.onRejoin) player.room.onRejoin(player);
 	}
 	ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
-	ws.send(Buffer.from(new Uint32Array([player.id])));
+	sendUserInfo(player);
 
 	ws.on("error", console.error);
 	ws.on("message", (data) => {
