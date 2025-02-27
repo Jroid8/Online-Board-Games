@@ -11,6 +11,7 @@ import { readFile } from "node:fs/promises";
 
 // Global Command Codes:
 // - 0xFE: Message (the recipient depends on room)
+// - 0xFC: Player ID
 
 const app = express();
 const server = createServer(app);
@@ -86,8 +87,9 @@ wss.on("connection", (ws, req) => {
 		clearTimeout(playerForgetTimeouts.get(player.id));
 		if (player.room.onRejoin) player.room.onRejoin(player);
 	}
-
 	ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
+	ws.send(Buffer.from(new Uint32Array([player.id])));
+
 	ws.on("error", console.error);
 	ws.on("message", (data) => {
 		// assumption is safe because ws.binaryType = "nodebuffer"
