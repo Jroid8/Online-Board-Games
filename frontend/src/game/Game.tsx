@@ -2,7 +2,13 @@ import { Outlet } from "react-router";
 import LoadingCentered from "../components/LoadingCentered";
 import { Playing, State, useStateStore } from "./ClientState";
 
-function Disabled({ children }: { children: React.ReactNode }) {
+function Banner({
+	message,
+	children,
+}: {
+	message: string;
+	children: React.ReactNode;
+}) {
 	return (
 		<div
 			css={{
@@ -24,32 +30,40 @@ function Disabled({ children }: { children: React.ReactNode }) {
 					borderRadius: "3ch",
 				}}
 			>
-				Waiting for players
+				{message}
 			</div>
 		</div>
 	);
 }
 
+const TEST: State = State.Playing;
+
 export default function Game() {
-	const state = useStateStore((store) => store.state);
+	const state = TEST; //useStateStore((store) => store.state);
 	const paused = useStateStore((store) => (store as Playing).paused);
 
+	let game = <LoadingCentered message={"Connecting..."} />;
 	switch (state) {
 		case State.InGameNotStarted:
-			return (
-				<Disabled>
+			game = (
+				<Banner message="Waiting for players...">
 					<Outlet />
-				</Disabled>
+				</Banner>
 			);
+			break;
 		case State.Playing:
 			if (paused)
-				return (
-					<Disabled>
+				game = (
+					<Banner message="Paused">
 						<Outlet />
-					</Disabled>
+					</Banner>
 				);
-			else return <Outlet />;
-		default:
-			return <LoadingCentered message={"Connecting..."} />;
+			else game = <Outlet />;
+			break;
 	}
+	return (
+		<div css={{ flex: 1, display: "flex" }}>
+			<div css={{ display: "flex", justifyContent: "center", flex: 6 }}>{game}</div>
+		</div>
+	);
 }
