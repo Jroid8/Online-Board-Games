@@ -72,25 +72,99 @@ export type StateStore = {
 } & PossibleStates;
 
 export const useStateStore = create<StateStore>()((set, get) => {
+	function deserPlayerData(
+		data: DataView<ArrayBuffer>,
+		offset: number = 0,
+	): [PlayerInfo, number] {
+		const decoder = new TextDecoder("utf-8");
+		const id = data.getUint32(offset);
+		offset += 4;
+		const len = data.getUint32(offset);
+		offset += 4;
+		const player = {
+			id,
+			name: decoder.decode(data.buffer.slice(offset, len)),
+		};
+		return [player, offset + len];
+	}
+
+	function gameMsgListener(event: MessageEvent) {
+		const msg = new DataView(event.data);
+		const current = get();
+		if (current.state === State.InGameNotStarted) {
+			switch (msg.getUint8(0)) {
+				case MsgCodes.game.gameStarted:
+					set({
+						...gameStateDeser[current.gameID](msg.buffer.slice(1)),
+						state: State.Playing,
+						paused: false,
+					});
+					break;
+				case MsgCodes.game.otherPlayerJoinedRoom:
+					set({ players: [...current.players, deserPlayerData(msg, 1)[0]] });
+					break;
+				case MsgCodes.game.otherPlayerDisconnected:
+					{
+						const discPlayer = msg.getUint32(1);
+						set({
+							players: current.players.filter((p) => p.id !== discPlayer),
+						});
+					}
+					break;
+				case MsgCodes.game.gameConcluded:
+					switchBackwards(State.InHub);
+					break;
+			}
+		} else if (current.state === State.Playing) {
+			switch (msg.getUint8(0)) {
+				case MsgCodes.game.otherPlayerJoinedRoom:
+					set({ players: [...current.players, deserPlayerData(msg, 1)[0]] });
+					break;
+				case MsgCodes.game.otherPlayerDisconnected:
+					// TODO
+					break;
+				case MsgCodes.game.gameConcluded:
+					switchBackwards(State.InHub);
+					break;
+			}
+		}
+	}
+
+	function switchBackwards(target: State.Disconnected | State.InHub) {
+		// assuming I don't call this in disconnected state
+		const current = get() as InHub;
+		const funcs = Object.fromEntries(
+			Object.entries(current).filter((e) => typeof e[1] === "function"),
+		);
+		// also redirect
+		current.socket.removeEventListener("message", gameMsgListener);
+		switch (target) {
+			case State.Disconnected:
+				current.socket.removeEventListener("error", socketError);
+				current.socket.removeEventListener("close", socketError);
+				return set({ ...funcs, state: State.Disconnected });
+			case State.InHub:
+				return set({ ...funcs, state: State.InHub, socket: current.socket });
+		}
+	}
+
+	function socketError() {
+		alert("Unexpected error occured");
+		switchBackwards(State.Disconnected);
+	}
+
 	function readJoinMsg(msg: DataView<ArrayBuffer>, gameID: number): bigint {
 		const current = get();
 		if (current.state !== State.InHub) return 0n;
-		const decoder = new TextDecoder("utf-8");
 		const matchID = msg.getBigUint64(1);
 		const waiting = msg.getUint8(9) == 0;
 		const playerCount = msg.getUint8(10);
 		const players = new Array(playerCount);
 		let offset = 11;
 		for (let i = 0; i < playerCount; i++) {
-			const id = msg.getUint32(offset);
-			offset += 4;
-			const len = msg.getUint32(offset);
-			offset += 4;
-			players.push({
-				id,
-				name: decoder.decode(new Uint8Array(msg.buffer, offset, len)),
-			});
-			offset += len;
+			const [p, o] = deserPlayerData(msg, offset);
+			players.push(p);
+			offset = o;
 		}
 		const gameState = waiting
 			? gameStateDeser[gameID](msg.buffer.slice(offset))
@@ -103,6 +177,8 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			gameID,
 		};
 		current.socket.addEventListener("message", gameMsgListener);
+		current.socket.addEventListener("error", socketError);
+		current.socket.addEventListener("close", socketError);
 		set(
 			waiting
 				? ingame
