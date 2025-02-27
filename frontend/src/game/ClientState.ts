@@ -91,7 +91,9 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			});
 			offset += len;
 		}
-		const gameState = waiting ? gameStateDeser[gameID](msg.buffer.slice(offset)) : undefined;
+		const gameState = waiting
+			? gameStateDeser[gameID](msg.buffer.slice(offset))
+			: undefined;
 		const ingame: InGameNotStarted = {
 			state: State.InGameNotStarted,
 			socket: current.socket,
@@ -164,7 +166,9 @@ export const useStateStore = create<StateStore>()((set, get) => {
 				new Uint8Array([matchTypeCode, gameID]),
 			);
 			if (res.getUint8(0) == 0xc0) {
-				navigate("/match/" + gameURLName + "/" + readJoinMsg(res, gameID));
+				navigate(
+					"/game/" + gameURLName + "/" + readJoinMsg(res, gameID).toString(),
+				);
 			}
 		},
 	};

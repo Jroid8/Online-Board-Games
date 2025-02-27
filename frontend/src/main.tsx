@@ -7,6 +7,8 @@ import randPastelColor from "./utils/RandPastelColor.ts";
 import NavBar from "./components/NavBar.tsx";
 import ModalManager from "./contexts/ModalManager.tsx";
 import GameListProvider from "./contexts/GameListProvider.tsx";
+import Game from "./game/Game.tsx";
+import TicTacToe from "./game/TicTacToe/component.tsx";
 
 const target = document.body;
 
@@ -19,6 +21,9 @@ createRoot(target).render(
 					<NavBar />
 					<Routes>
 						<Route index element={<GameCatalog />} />
+						<Route path="game" element={<Game />}>
+							<Route path="tic-tac-toe" element={<TicTacToe />} />
+						</Route>
 					</Routes>
 				</ModalManager>
 			</BrowserRouter>
