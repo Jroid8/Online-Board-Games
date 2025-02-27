@@ -59,8 +59,13 @@ export default class TicTacToe extends GameRoom {
 				p.ws!.send(winMsg);
 				p.room = globalThis.hub;
 			}
-		} else
+		} else {
 			this.turn = 1 - this.turn;
+			const nextTurnMsg = Buffer.alloc(5);
+			nextTurnMsg.writeUInt8(0xd0);
+			nextTurnMsg.writeUInt32BE(this.players[this.turn].id, 1);
+			this.broadcastMessage(nextTurnMsg);
+		}
 	}
 
 	serializeState(): Buffer {

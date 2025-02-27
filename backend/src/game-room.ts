@@ -15,6 +15,7 @@ export const gameMsgCodes = Object.freeze({
 // Problems will clearly arise once a sub class which doesn't abide by this rule is constructed outside of gameList
 export abstract class GameRoom implements Room {
 	protected players: Player[] = [];
+	protected turn: number = 0;
 	protected playerIndex: Map<number, number> = new Map();
 	public readonly id: bigint;
 	private forfeitTimeouts: Map<number, NodeJS.Timeout> = new Map();
@@ -56,14 +57,22 @@ export abstract class GameRoom implements Room {
 		return this.players.length >= this.staticFields().playerCount;
 	}
 
+	private serTurnState(): Buffer {
+		const gameStarted = Buffer.alloc(5);
+		gameStarted.writeUInt8(0xd0);
+		gameStarted.writeUInt8(this.isGameStarted() ? 1 : 0);
+		return gameStarted;
+	}
+
 	private sendFullJoinMsg(player: Player) {
 		const serRoomID = Buffer.alloc(8);
 		serRoomID.writeBigUint64BE(this.id);
+		if (this.isGameStarted())
 		player.ws!.send(
 			Buffer.concat([
 				Buffer.from([gameMsgCodes.joinedRoom]),
 				serRoomID,
-				Buffer.from([this.isGameStarted() ? 1 : 0]),
+				this.serTurnState(),
 				this.serializeAllPlayerData(player),
 				this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
 			]),
@@ -91,7 +100,7 @@ export abstract class GameRoom implements Room {
 			this.begin();
 			this.broadcastMessage(
 				Buffer.concat([
-					Buffer.from([gameMsgCodes.gameStarted]),
+					this.serTurnState(),
 					this.serializeState(),
 				]),
 			);
