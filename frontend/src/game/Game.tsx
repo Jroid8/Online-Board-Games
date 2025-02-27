@@ -25,9 +25,10 @@ function Banner({
 					transform: "translate(-50%, -50%)",
 					background: "rgba(0, 0, 0, 0.7)",
 					color: "white",
-					fontSize: "10rem",
+					fontSize: "8vmin",
 					padding: "3ch",
 					borderRadius: "3ch",
+					textAlign: "center"
 				}}
 			>
 				{message}
@@ -36,17 +37,15 @@ function Banner({
 	);
 }
 
-const TEST: State = State.Playing;
-
 export default function Game() {
-	const state = TEST; //useStateStore((store) => store.state);
+	const state = useStateStore((store) => store.state);
 	const paused = useStateStore((store) => (store as Playing).paused);
 
 	let game = <LoadingCentered message={"Connecting..."} />;
 	switch (state) {
 		case State.InGameNotStarted:
 			game = (
-				<Banner message="Waiting for players...">
+				<Banner message="Waiting for players">
 					<Outlet />
 				</Banner>
 			);
