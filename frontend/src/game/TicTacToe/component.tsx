@@ -1,4 +1,4 @@
-import { useStateStore } from "../ClientStatus";
+import { useStateStore } from "../ClientState";
 import { Cell } from "./states";
 
 function Slot({ value, onClick }: { value: Cell; onClick: () => void }) {

@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import PastelFloatBtn from "../common/PastelFloatBtn.tsx";
+import PastelFloatBtn from "./PastelFloatBtn.tsx";
 import Cookies from "js-cookie";
 import { Link } from "react-router";
 import Logo from "./Logo.tsx";

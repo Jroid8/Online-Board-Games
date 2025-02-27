@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import GameInfo from "../common/GameInfo";
+import GameInfo from "../utils/GameInfo";
 import { css } from "@emotion/react";
-import randPastelColor from "../common/RandPastelColor";
+import randPastelColor from "../utils/RandPastelColor";
 
 const selectCss = css({
 	fontSize: "inherit",

@@ -1,5 +1,5 @@
 import GameCard from "./GameCard";
-import GameInfo from "../common/GameInfo";
+import GameInfo from "../utils/GameInfo";
 
 export default function GameGrid({ games }: { games: GameInfo[] }) {
 	return (

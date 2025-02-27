@@ -1,9 +1,9 @@
-import GameInfo from "../common/GameInfo";
+import GameInfo from "../utils/GameInfo";
 import GameGrid from "./GameGrid";
 import SearchSortBar from "./SearchSortBar";
 import { useCallback, useContext, useState } from "react";
 import GameListCtx from "../contexts/GameListCtx";
-import LoadingCentered from "../common/LoadingCentered";
+import LoadingCentered from "./LoadingCentered";
 
 export default function GameCatalog() {
 	const allGames = useContext(GameListCtx);

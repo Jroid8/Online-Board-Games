@@ -1,12 +1,12 @@
-import randPastelColor from "../common/RandPastelColor";
-import GameInfo from "../common/GameInfo";
+import randPastelColor from "../utils/RandPastelColor";
+import GameInfo from "../utils/GameInfo";
 import Cookies from "js-cookie";
-import PastelFloatBtn from "../common/PastelFloatBtn";
-import CommonModalCSS from "../modal/CommonModalCSS";
+import PastelFloatBtn from "./PastelFloatBtn";
+import CommonModalCSS from "../utils/CommonModalCSS";
 import { css } from "@emotion/react";
 import { useState } from "react";
-import loading from "../common/loading.svg";
-import { useStateStore } from "../match/ClientState";
+import loading from "../utils/loading.svg";
+import { useStateStore } from "../game/ClientState";
 import { useNavigate } from "react-router";
 
 const closeButtonCSS = css({

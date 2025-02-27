@@ -1,4 +1,4 @@
 import { createContext } from "react";
-import GameInfo from "../common/GameInfo";
+import GameInfo from "../utils/GameInfo";
 
 export default createContext<GameInfo[]>([]);

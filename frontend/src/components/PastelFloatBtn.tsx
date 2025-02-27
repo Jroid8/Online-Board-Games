@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
-import randPastelColor from "./RandPastelColor";
-import HSL from "./HSL";
+import randPastelColor from "../utils/RandPastelColor";
+import HSL from "../utils/HSL";
 
 type ComponentProps<T extends React.ElementType> =
 	React.ComponentPropsWithoutRef<T> & { as?: T };

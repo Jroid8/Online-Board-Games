@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
-import LoadingCentered from "../common/LoadingCentered";
-import { Playing, State, useStateStore } from "./ClientStatus";
+import LoadingCentered from "../components/LoadingCentered";
+import { Playing, State, useStateStore } from "./ClientState";
 
 function Disabled({ children }: { children: React.ReactNode }) {
 	return (

@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import PlayerInfo from "../common/PlayerInfo";
-import { socketFetch } from "../common/SocketUtils";
+import PlayerInfo from "../utils/PlayerInfo";
+import { socketFetch } from "../utils/SocketUtils";
 import {
 	deserialize as deserTicTacToe,
 	TicTacToeState,

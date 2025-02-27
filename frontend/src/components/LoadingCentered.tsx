@@ -1,4 +1,4 @@
-import loading from "/src/common/loading.svg";
+import loading from "../utils/loading.svg";
 
 export default function LoadingCentered({message}: {message: string}) {
 	return <div

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import randPastelColor from "../common/RandPastelColor.ts";
+import randPastelColor from "../utils/RandPastelColor.ts";
 import { useNavigate } from "react-router";
 
 export default function Logo() {

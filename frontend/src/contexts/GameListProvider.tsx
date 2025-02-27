@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import GameListCtx from "./GameListCtx";
-import GameInfo from "../common/GameInfo";
+import GameInfo from "../utils/GameInfo";
 
 const currentGames: GameInfo[] = [
 	{
