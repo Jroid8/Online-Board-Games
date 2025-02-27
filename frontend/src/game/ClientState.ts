@@ -147,7 +147,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 
 	function switchBackwards(target: State.Disconnected | State.InHub) {
 		// assuming I don't call this in disconnected state
-		const current = get() as InHub;
+		const current = get() as InHub | InGameNotStarted | Playing;
 		const funcs = Object.fromEntries(
 			Object.entries(current).filter((e) => typeof e[1] === "function"),
 		);
@@ -160,6 +160,8 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						null;
 				return set({ ...funcs, state: State.Disconnected });
 			case State.InHub:
+				if (current.state === State.Playing)
+					current.socket.removeEventListener("message", current.listener);
 				return set({ ...funcs, state: State.InHub, socket: current.socket });
 		}
 	}
