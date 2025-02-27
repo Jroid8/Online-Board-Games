@@ -66,7 +66,7 @@ export type PossibleStates =
 	| (Playing & TicTacToeState);
 
 export type StateStore = {
-	connect: () => void;
+	connect: () => Promise<void>;
 	joinMatch: (
 		gameID: number,
 		matchID: bigint,
@@ -211,34 +211,38 @@ export const useStateStore = create<StateStore>()((set, get) => {
 
 	return {
 		state: State.Disconnected,
-		connect: () => {
-			if (get().state !== State.Disconnected) return;
-			const isGuest = !Cookies.get("session");
-			const ws = new WebSocket("ws://" + location.host);
-			ws.binaryType = "arraybuffer";
-			ws.onopen = () => {
-				ws.onopen = null;
-				ws.onmessage = (ev) => {
-					const playerID = new DataView(ev.data).getUint32(0);
-					ws.onmessage = commonMsgListener;
-					ws.onerror = ws.onclose = socketError;
-					set({
-						state: State.InHub,
-						socket: ws,
-						user: {
-							id: playerID,
-							name: isGuest ? "Guest" + playerID : "#TODO",
-						},
-					});
+		connect: async () => {
+			return new Promise((resolve, reject) => {
+				if (get().state !== State.Disconnected) return;
+				const isGuest = !Cookies.get("session");
+				const ws = new WebSocket("ws://" + location.host);
+				ws.binaryType = "arraybuffer";
+				ws.onerror = ws.onclose = reject;
+				ws.onopen = () => {
+					ws.onopen = null;
+					ws.onmessage = (ev) => {
+						const playerID = new DataView(ev.data).getUint32(0);
+						ws.onmessage = commonMsgListener;
+						ws.onerror = ws.onclose = socketError;
+						set({
+							state: State.InHub,
+							socket: ws,
+							user: {
+								id: playerID,
+								name: isGuest ? "Guest" + playerID : "#TODO",
+							},
+						});
+						resolve();
+					};
 				};
-			};
-			ws.onerror = ws.onclose = () => {
-				console.error("Failed to connect to server");
-			};
+				ws.onerror = ws.onclose = () => {
+					console.error("Failed to connect to server");
+				};
+			});
 		},
 		joinMatch: async (gameID: number, matchID: bigint) => {
-			const state = get();
-			if (state.state !== State.InHub) return;
+			if (get().state === State.Disconnected) await get().connect();
+			const state = get() as InHub;
 			const msg = new DataView(new ArrayBuffer(10));
 			msg.setUint8(0, 0x10);
 			msg.setUint8(1, gameID);
@@ -254,8 +258,8 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			gameURLName: string,
 			navigate: (path: string) => void,
 		) => {
-			const state = get();
-			if (state.state !== State.InHub) return;
+			if (get().state === State.Disconnected) await get().connect();
+			const state = get() as InHub;
 			const res = await socketFetch(
 				state.socket,
 				new Uint8Array([matchTypeCode, gameID]),
