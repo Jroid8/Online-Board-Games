@@ -13,9 +13,9 @@ type AvailableGameStates = TicTacToeState;
 
 const gameStateDeser: Record<
 	number,
-	(current: Omit<InHub, "state">, data: ArrayBuffer) => AvailableGameStates
+	(data: ArrayBuffer) => AvailableGameStates
 > = {
-	0: (current, data) => deserTicTacToe(current, new DataView(data)),
+	0: (data) => deserTicTacToe(new DataView(data)),
 };
 
 const gameMsgListener: Record<number, (event: MessageEvent) => void> = {
@@ -57,6 +57,8 @@ export interface Playing {
 	gameID: number;
 	paused: boolean;
 	listener: (event: MessageEvent) => void;
+	turn: number;
+	myTurn: boolean;
 }
 
 export type PossibleStates =
@@ -109,10 +111,12 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						gameMsgListener[current.gameID],
 					);
 					set({
-						...gameStateDeser[current.gameID](current, msg.buffer.slice(1)),
+						...gameStateDeser[current.gameID](msg.buffer.slice(5)),
 						state: State.Playing,
 						paused: false,
 						listener: gameMsgListener[current.gameID],
+						turn: msg.getUint32(1),
+						myTurn: msg.getUint32(1) === current.user.id,
 					});
 					break;
 				case MsgCodes.game.otherPlayerJoinedRoom:
@@ -176,9 +180,12 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		if (current.state !== State.InHub) return 0n;
 		const matchID = msg.getBigUint64(1);
 		const waiting = msg.getUint8(9) == 0;
-		const playerCount = msg.getUint8(10);
+		let offset = 10;
+		const turn = waiting ? undefined : msg.getUint32(offset);
+		if (!waiting) offset += 4;
+		const playerCount = msg.getUint8(offset);
+		offset += 1;
 		const players = new Array(playerCount);
-		let offset = 11;
 		for (let i = 0; i < playerCount; i++) {
 			const [p, o] = deserPlayerData(msg, offset);
 			players.push(p);
@@ -186,7 +193,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		}
 		const gameState = waiting
 			? undefined
-			: gameStateDeser[gameID](current, msg.buffer.slice(offset));
+			: gameStateDeser[gameID](msg.buffer.slice(offset));
 		if (!waiting)
 			current.socket.addEventListener("message", gameMsgListener[gameID]);
 		const ingame: InGameNotStarted = {
@@ -206,6 +213,8 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						state: State.Playing,
 						paused: false,
 						listener: gameMsgListener[gameID],
+						turn,
+						myTurn: turn === current.user.id,
 					},
 		);
 		return matchID;
