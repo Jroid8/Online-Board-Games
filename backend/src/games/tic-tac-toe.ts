@@ -16,8 +16,8 @@ export default class TicTacToe extends GameRoom {
 	board: BoardSlot[][];
 	turn: number = 0;
 
-	constructor(players: Player[]) {
-		super(players);
+	constructor() {
+		super();
 		this.board = Array.from({ length: 3 }, () =>
 			new Array(3).fill(BoardSlot.Empty),
 		);

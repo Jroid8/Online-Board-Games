@@ -8,7 +8,8 @@ function matchMake(gameID: number) {
 	const gameQueue = queue[gameID];
 	const game = gameList[gameID];
 	while (gameQueue.length >= game.playerCount) {
-		let room = new game(gameQueue.splice(-game.playerCount, game.playerCount));
+		let room = new game();
+		room.addPlayers(gameQueue.splice(-game.playerCount, game.playerCount));
 		globalThis.rooms.set(room.id, room);
 	}
 }

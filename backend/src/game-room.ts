@@ -100,17 +100,8 @@ export abstract class GameRoom implements Room {
 		return this.playerIndex.get(player.id) !== undefined;
 	}
 
-	public constructor(players: Player[]) {
+	public constructor() {
 		this.id = BigInt(Date.now());
-		this.players = players;
-		for (const p of this.players) {
-			p.room = this;
-			this.sendFullJoinMsg(p);
-		}
-		if (this.isGameStarted()) {
-			this.initPlayerIndex();
-			this.begin();
-		}
 	}
 
 	public register(player: Player) {
@@ -119,6 +110,19 @@ export abstract class GameRoom implements Room {
 		this.players.push(player);
 		player.room = this;
 		this.startGameIfCan();
+	}
+
+	public addPlayers(players: Player[]) {
+		for (const p of players) {
+			p.room = this;
+			this.sendFullJoinMsg(p);
+			this.informPlayerJoin(p);
+		}
+		this.players = this.players.concat(players);
+		if (this.isGameStarted()) {
+			this.initPlayerIndex();
+			this.begin();
+		}
 	}
 
 	public terminate(inform: boolean) {
