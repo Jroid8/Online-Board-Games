@@ -17,11 +17,9 @@ createRoot(target).render(
 			<BrowserRouter>
 				<ModalManager>
 					<NavBar />
-					<div css={{ flex: 1 }}>
-						<Routes>
-							<Route index element={<GameCatalog />} />
-						</Routes>
-					</div>
+					<Routes>
+						<Route index element={<GameCatalog />} />
+					</Routes>
 				</ModalManager>
 			</BrowserRouter>
 		</GameListProvider>
