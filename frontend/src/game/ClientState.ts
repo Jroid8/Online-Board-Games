@@ -215,7 +215,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			return new Promise((resolve, reject) => {
 				if (get().state !== State.Disconnected) return;
 				const isGuest = !Cookies.get("session");
-				const ws = new WebSocket("ws://" + location.host);
+				const ws = new WebSocket("ws://localhost:8080"); // CHANGE ME
 				ws.binaryType = "arraybuffer";
 				ws.onerror = ws.onclose = reject;
 				ws.onopen = () => {
