@@ -108,7 +108,7 @@ export default function Game() {
 			>
 				<h4>Players</h4>
 				<ul>
-					{players.map((p) => (
+					{players && players.map((p) => (
 						<li>{p.name}</li>
 					))}
 				</ul>
