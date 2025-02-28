@@ -118,13 +118,4 @@ wss.on("connection", (ws, req) => {
 	});
 });
 
-// temporary
-app.get("/", async (_, res) => {
-	res.send(
-		"<!DOCTYPE html><style>body {background-color: black}</style><script>" +
-			(await readFile("test.js")) +
-			"</script>",
-	);
-});
-
 server.listen(process.env.PORT || 8080);
