@@ -28,7 +28,7 @@ function Banner({
 					fontSize: "8vmin",
 					padding: "3ch",
 					borderRadius: "3ch",
-					textAlign: "center"
+					textAlign: "center",
 				}}
 			>
 				{message}
@@ -40,29 +40,35 @@ function Banner({
 export default function Game() {
 	const state = useStateStore((store) => store.state);
 	const paused = useStateStore((store) => (store as Playing).paused);
+	const winner = useStateStore((store) => (store as Playing).winner);
 
 	let game = <LoadingCentered message={"Connecting..."} />;
-	switch (state) {
-		case State.InGameNotStarted:
+	if (state === State.InGameNotStarted) {
+		game = (
+			<Banner message="Waiting for players">
+				<Outlet />
+			</Banner>
+		);
+	} else if (state === State.Playing) {
+		if (paused)
 			game = (
-				<Banner message="Waiting for players">
+				<Banner message="Paused">
 					<Outlet />
 				</Banner>
 			);
-			break;
-		case State.Playing:
-			if (paused)
-				game = (
-					<Banner message="Paused">
-						<Outlet />
-					</Banner>
-				);
-			else game = <Outlet />;
-			break;
+		else if (winner)
+			game = (
+				<Banner message={winner.name + " wins!"}>
+					<Outlet />
+				</Banner>
+			);
+		else game = <Outlet />;
 	}
 	return (
 		<div css={{ flex: 1, display: "flex" }}>
-			<div css={{ display: "flex", justifyContent: "center", flex: 6 }}>{game}</div>
+			<div css={{ display: "flex", justifyContent: "center", flex: 6 }}>
+				{game}
+			</div>
 		</div>
 	);
 }

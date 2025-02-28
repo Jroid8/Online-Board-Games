@@ -55,10 +55,8 @@ export default class TicTacToe extends GameRoom {
 			let winMsg = Buffer.alloc(5);
 			winMsg.writeUInt8(gameMsgCodes.gameConcluded);
 			winMsg.writeUInt32BE(player.id, 1);
-			for (const p of this.players) {
-				p.ws!.send(winMsg);
-				p.room = globalThis.hub;
-			}
+			this.broadcastMessage(winMsg);
+			for (const p of this.players) p.room = globalThis.hub;
 		} else {
 			this.turn = 1 - this.turn;
 			this.broadcastMessage(

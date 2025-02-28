@@ -55,6 +55,7 @@ export interface Playing {
 	players: PlayerInfo[];
 	matchID: bigint;
 	gameID: number;
+	winner: null | PlayerInfo;
 	paused: boolean;
 	listener: (event: MessageEvent) => void;
 	turn: number;
@@ -117,6 +118,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						listener: gameMsgListener[current.gameID],
 						turn: msg.getUint32(1),
 						myTurn: msg.getUint32(1) === current.user.id,
+						winner: null,
 					});
 					break;
 				case MsgCodes.game.otherPlayerJoinedRoom:
@@ -143,7 +145,16 @@ export const useStateStore = create<StateStore>()((set, get) => {
 					// TODO
 					break;
 				case MsgCodes.game.gameConcluded:
-					switchBackwards(State.InHub);
+					{
+						const id = msg.getUint32(1);
+						const player = current.players.find((p) => p.id === id);
+						if (player === undefined) {
+							alert("Invalid server response");
+							switchBackwards(State.Disconnected);
+							break;
+						}
+						set({ winner: { id, name: player.name } });
+					}
 					break;
 			}
 		}
@@ -156,6 +167,8 @@ export const useStateStore = create<StateStore>()((set, get) => {
 			Object.entries(current).filter((e) => typeof e[1] === "function"),
 		);
 		// also redirect
+		if (current.state === State.Playing)
+			current.socket.removeEventListener("message", current.listener);
 		switch (target) {
 			case State.Disconnected:
 				current.socket.onmessage =
@@ -164,8 +177,6 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						null;
 				return set({ ...funcs, state: State.Disconnected });
 			case State.InHub:
-				if (current.state === State.Playing)
-					current.socket.removeEventListener("message", current.listener);
 				return set({ ...funcs, state: State.InHub, socket: current.socket });
 		}
 	}
@@ -215,6 +226,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 						listener: gameMsgListener[gameID],
 						turn,
 						myTurn: turn === current.user.id,
+						winner: null,
 					},
 		);
 		return matchID;
