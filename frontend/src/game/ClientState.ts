@@ -196,7 +196,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		if (!waiting) offset += 4;
 		const playerCount = msg.getUint8(offset);
 		offset += 1;
-		const players = new Array(playerCount);
+		const players = [];
 		for (let i = 0; i < playerCount; i++) {
 			const [p, o] = deserPlayerData(msg, offset);
 			players.push(p);
