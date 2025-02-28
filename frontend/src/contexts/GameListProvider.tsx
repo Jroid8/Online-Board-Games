@@ -2,38 +2,20 @@ import { useEffect, useState } from "react";
 import GameListCtx from "./GameListCtx";
 import GameInfo from "../utils/GameInfo";
 
-const currentGames: GameInfo[] = [
-	{
-		id: 0,
-		name: "Tic Tac Toe",
-		urlName: "tic-tac-toe",
-		playersOnline: 0,
-	},
-	{
-		id: 1,
-		name: "Checkers",
-		urlName: "checkers",
-		playersOnline: 1,
-	},
-	{
-		id: 2,
-		name: "Go",
-		urlName: "go",
-		playersOnline: 2,
-	},
-];
 export default function GameListProvider({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
 	const [gameList, gameListResolved] = useState<GameInfo[]>([]);
-	
+
 	useEffect(() => {
-		setTimeout(() => {
-			gameListResolved(currentGames);
-		}, 500);
+		fetch("http://localhost:8080/game-list")
+			.then((res) => res.json())
+			.then((res) => gameListResolved(res));
 	}, []);
 
-	return <GameListCtx.Provider value={gameList}>{children}</GameListCtx.Provider>;
+	return (
+		<GameListCtx.Provider value={gameList}>{children}</GameListCtx.Provider>
+	);
 }
