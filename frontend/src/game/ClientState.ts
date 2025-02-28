@@ -73,8 +73,6 @@ export type StateStore = {
 	joinMatch: (
 		gameID: number,
 		matchID: bigint,
-		gameURLName: string,
-		navigate: (path: string) => void,
 	) => Promise<void>;
 	requestMatch: (
 		gameID: number,
@@ -267,10 +265,9 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		joinMatch: async (gameID: number, matchID: bigint) => {
 			if (get().state === State.Disconnected) await get().connect();
 			const state = get() as InHub;
-			const msg = new DataView(new ArrayBuffer(10));
-			msg.setUint8(0, 0x10);
-			msg.setUint8(1, gameID);
-			msg.setBigUint64(2, matchID);
+			const msg = new DataView(new ArrayBuffer(9));
+			msg.setUint8(0, MsgCodes.hub.joinRoomWithCode);
+			msg.setBigUint64(1, matchID);
 			const res = await socketFetch(state.socket, msg.buffer);
 			if (res.getUint8(0) == MsgCodes.game.joinedRoom) {
 				readJoinMsg(res, gameID);

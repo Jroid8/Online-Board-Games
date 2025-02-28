@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, useParams } from "react-router";
 import LoadingCentered from "../components/LoadingCentered";
 import { Playing, State, useStateStore } from "./ClientState";
 import { useBlocker } from "react-router";
@@ -45,6 +45,8 @@ function Banner({
 export default function Game() {
 	const state = useStateStore((store) => store.state);
 	const forfeit = useStateStore((store) => store.forfeit);
+	const joinMatch = useStateStore((store) => store.joinMatch);
+	const { id } = useParams();
 	const paused = useStateStore((store) => (store as Playing).paused);
 	const players = useStateStore((store) => (store as Playing).players);
 	const winner = useStateStore((store) => (store as Playing).winner);
@@ -74,6 +76,11 @@ export default function Game() {
 				.finally(() => setModalShown(false));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [blocker]);
+
+	useEffect(() => {
+		if (state === State.InGameNotStarted || state === State.Playing) return;
+		joinMatch(0, BigInt(id!));
+	}, [state, id, joinMatch]);
 
 	let game = <LoadingCentered message={"Connecting..."} />;
 	if (state === State.InGameNotStarted) {
@@ -107,11 +114,7 @@ export default function Game() {
 				style={{ backgroundColor: randPastelColor().toString() }}
 			>
 				<h4>Players</h4>
-				<ul>
-					{players && players.map((p) => (
-						<li>{p.name}</li>
-					))}
-				</ul>
+				<ul>{players && players.map((p) => <li key={p.id}>{p.name}</li>)}</ul>
 			</div>
 		</div>
 	);
