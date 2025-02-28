@@ -18,10 +18,26 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, maxPayload: 256 });
 const sql = neon(process.env.DATABASE_URL!);
+log.setDefaultLevel("debug");
 
 const tokenPlayerMap: Map<string, number> = new Map();
 const playerForgetTimeouts: Map<number, NodeJS.Timeout> = new Map();
 let guestCount = 0;
+
+sql(`SELECT us.tokenstr, u.id, u.username FROM user_session AS us
+JOIN "user" AS u ON us.user_id=u.id`).then((query) =>
+	query.forEach((r) => {
+		const player: Player = {
+			id: r.id,
+			isGuest: false,
+			name: r.username,
+			room: globalThis.hub,
+			ws: null,
+		};
+		tokenPlayerMap.set(r.tokenstr, player.id);
+		globalThis.onlinePlayers.set(player.id, player);
+	}),
+);
 
 globalThis.onlinePlayers = new Map();
 globalThis.hub = new Hub();
@@ -70,28 +86,12 @@ function handleChatMsg(sender: Player, msg: Buffer): boolean {
 	return true;
 }
 
-wss.on("headers", async (headers, req) => {
+wss.on("headers", (headers, req) => {
 	if (!req.headers.cookie) createGuestSession(headers, req.headers);
 	else {
 		let session = cookie.parse(req.headers.cookie).session;
-		if (session) {
-			if (tokenPlayerMap.get(session)) return;
-			let query = await sql(
-				`SELECT u.user_id, u.username FROM user_session AS us
-JOIN "user" AS u ON us.user_id=u.id WHERE tokenstr='${session}'`,
-			);
-			if (query.length > 0) {
-				const player: Player = {
-					id: query[0].user_id,
-					name: query[0].username,
-					isGuest: false,
-					room: hub,
-					ws: null
-				};
-				tokenPlayerMap.set(session, player.id);
-				globalThis.onlinePlayers.set(query[0].user_id, player)
-			}
-		} else createGuestSession(headers, req.headers);
+		if (!session || !tokenPlayerMap.get(session))
+			createGuestSession(headers, req.headers);
 	}
 });
 
@@ -229,4 +229,5 @@ app.post("/signin", async (req, res) => {
 	}
 });
 
+log.info("server started");
 server.listen(process.env.PORT || 8080);
