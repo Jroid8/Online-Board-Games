@@ -7,7 +7,7 @@ import { Player } from "./player";
 import { randomBytes } from "node:crypto";
 import { IncomingHttpHeaders } from "node:http2";
 import Hub from "./hub";
-import { readFile } from "node:fs/promises";
+import log from "loglevel";
 
 // Global Command Codes:
 // - 0xFE: Message (the recipient depends on room)
@@ -42,7 +42,7 @@ function createGuestSession(
 		ws: null,
 		name: "Guest" + id,
 		isGuest: true,
-		room: hub,
+		room: globalThis.hub,
 	});
 	let expires = new Date(Date.now());
 	expires.setDate(expires.getDate() + 1);
@@ -52,6 +52,7 @@ function createGuestSession(
 	});
 	headers.push("Set-Cookie: " + biscuit);
 	reqHeaders.cookie = biscuit;
+	log.info("Created guest #" + id);
 }
 
 function handleChatMsg(sender: Player, msg: Buffer): boolean {
@@ -95,8 +96,9 @@ wss.on("connection", (ws, req) => {
 	}
 	ws.binaryType = "nodebuffer"; // ensure recieved data type is Buffer
 	sendUserInfo(player);
+	log.info(`<${player.id}> connected`);
 
-	ws.on("error", console.error);
+	ws.on("error", log.error);
 	ws.on("message", (data) => {
 		// assumption is safe because ws.binaryType = "nodebuffer"
 		if (!handleChatMsg(player, data as Buffer))
@@ -111,10 +113,12 @@ wss.on("connection", (ws, req) => {
 				() => {
 					globalThis.onlinePlayers.delete(player.id);
 					tokenPlayerMap.delete(token);
+					log.info(` data of <${player.name}> has been removed from memory`);
 				},
 				1000 * 60 * 60,
 			),
 		);
+		log.info(`<${player.id}> disconnected`);
 	});
 });
 

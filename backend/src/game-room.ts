@@ -1,3 +1,4 @@
+import log from "loglevel";
 import GameInfo from "./game-info";
 import { Player } from "./player";
 import Room from "./room";
@@ -8,7 +9,7 @@ export const gameMsgCodes = Object.freeze({
 	otherPlayerDisconnected: 0xc3,
 	gameStarted: 0xc2,
 	gameConcluded: 0xc8,
-	playerTurn: 0xd0
+	playerTurn: 0xd0,
 });
 
 // Classes extending this MUST HAVE GameInfo fields as static fields
@@ -144,6 +145,7 @@ export abstract class GameRoom implements Room {
 		for (const p of this.players) p.room = globalThis.hub;
 		this.players = [];
 		globalThis.rooms.delete(this.id);
+		log.trace(`Deleted room [${this.id}]`);
 	}
 
 	public onDisconnect(player: Player) {
@@ -160,12 +162,14 @@ export abstract class GameRoom implements Room {
 			player.room = globalThis.hub;
 		}
 		this.broadcastMessage(disconnectMsg);
+		log.trace(`<${player.name}> disconnected from [${this.id}]`);
 	}
 
 	public onRejoin(player: Player): void {
 		clearTimeout(this.forfeitTimeouts.get(player.id));
 		this.informPlayerJoin(player);
 		this.sendFullJoinMsg(player);
+		log.trace(`<${player.name}> reconnected to [${this.id}]`);
 	}
 
 	public onChat(player: Player, message: Buffer): void {

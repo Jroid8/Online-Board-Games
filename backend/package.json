@@ -17,10 +17,11 @@
     "cookie": "^1.0.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "loglevel": "^1.9.2",
     "typescript": "^5.7.3",
     "ws": "^8.18.0"
   },
-	"prettier": {
-		"useTabs": true
-	}
+  "prettier": {
+    "useTabs": true
+  }
 }
