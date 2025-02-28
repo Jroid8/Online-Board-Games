@@ -82,6 +82,7 @@ export type StateStore = {
 		gameURLName: string,
 		navigate: (path: string) => void,
 	) => Promise<void>;
+	forfeit: () => void;
 } & PossibleStates;
 
 export const useStateStore = create<StateStore>()((set, get) => {
@@ -292,6 +293,13 @@ export const useStateStore = create<StateStore>()((set, get) => {
 					"/game/" + gameURLName + "/" + readJoinMsg(res, gameID).toString(),
 				);
 			} else alert("Invalid server response");
+		},
+		forfeit: () => {
+			const current = get();
+			if (current.state === State.InHub || current.state === State.Disconnected)
+				return;
+			current.socket.send(new Uint8Array([MsgCodes.game.leftRoom]));
+			switchBackwards(State.InHub);
 		},
 	};
 });

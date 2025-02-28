@@ -44,6 +44,7 @@ function Banner({
 
 export default function Game() {
 	const state = useStateStore((store) => store.state);
+	const forfeit = useStateStore((store) => store.forfeit);
 	const paused = useStateStore((store) => (store as Playing).paused);
 	const winner = useStateStore((store) => (store as Playing).winner);
 	const blocker = useBlocker(() => state === State.Playing && winner === null);
@@ -64,8 +65,10 @@ export default function Game() {
 				);
 			})
 				.then((r) => {
-					if (r) blocker.proceed!();
-					else blocker.reset!();
+					if (r) {
+						blocker.proceed!();
+						forfeit();
+					} else blocker.reset!();
 				})
 				.finally(() => setModalShown(false));
 		// eslint-disable-next-line react-hooks/exhaustive-deps

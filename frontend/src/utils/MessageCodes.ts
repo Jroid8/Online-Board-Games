@@ -1,6 +1,7 @@
 export default {
 	game: {
 		joinedRoom: 0xc0,
+		leftRoom: 0xc0,
 		otherPlayerJoinedRoom: 0xc1,
 		otherPlayerDisconnected: 0xc3,
 		gameStarted: 0xc2,
