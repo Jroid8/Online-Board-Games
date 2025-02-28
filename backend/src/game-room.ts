@@ -43,15 +43,12 @@ export abstract class GameRoom implements Room {
 		return Buffer.concat([idBin, nameLengthBin, nameBin]);
 	}
 
-	protected serializeAllPlayerData(excludePlayer?: Player): Buffer {
-		const excNum = excludePlayer ? 1 : 0;
-		if (this.players.length - excNum <= 0) return Buffer.from([0]);
+	protected serializeAllPlayerData(): Buffer {
+		if (this.players.length === 0) return Buffer.from([0]);
 		const buffs: Buffer[] = [];
-		buffs.push(Buffer.from([this.players.length - excNum]));
-		for (const p of this.players) {
-			if (p.id === excludePlayer?.id) continue;
+		buffs.push(Buffer.from([this.players.length]));
+		for (const p of this.players)
 			buffs.push(GameRoom.serializePlayerData(p));
-		}
 		return Buffer.concat(buffs);
 	}
 
@@ -68,6 +65,7 @@ export abstract class GameRoom implements Room {
 
 	private sendFullJoinMsg(player: Player) {
 		const serRoomID = Buffer.alloc(8);
+		const serPlayerData = this.serializeAllPlayerData();
 		serRoomID.writeBigUint64BE(this.id);
 		player.ws!.send(
 			Buffer.concat([
@@ -75,7 +73,7 @@ export abstract class GameRoom implements Room {
 				serRoomID,
 				Buffer.from([this.isGameStarted() ? 1 : 0]),
 				this.serTurnState(),
-				this.serializeAllPlayerData(player),
+				serPlayerData,
 				this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
 			]),
 		);
