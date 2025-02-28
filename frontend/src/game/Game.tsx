@@ -46,6 +46,7 @@ export default function Game() {
 	const state = useStateStore((store) => store.state);
 	const forfeit = useStateStore((store) => store.forfeit);
 	const paused = useStateStore((store) => (store as Playing).paused);
+	const players = useStateStore((store) => (store as Playing).players);
 	const winner = useStateStore((store) => (store as Playing).winner);
 	const blocker = useBlocker(() => state === State.Playing && winner === null);
 	const showModal = useContext(ModalContext)!;
@@ -100,6 +101,17 @@ export default function Game() {
 		<div css={{ flex: 1, display: "flex" }}>
 			<div css={{ display: "flex", justifyContent: "center", flex: 6 }}>
 				{game}
+			</div>
+			<div
+				css={{ minWidth: "20em", flexShrink: 0 }}
+				style={{ backgroundColor: randPastelColor().toString() }}
+			>
+				<h4>Players</h4>
+				<ul>
+					{players.map((p) => (
+						<li>{p.name}</li>
+					))}
+				</ul>
 			</div>
 		</div>
 	);
