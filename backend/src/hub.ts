@@ -1,3 +1,4 @@
+import { GameRoom } from "./game-room";
 import gameList from "./games/game-list";
 import addToQueue from "./match-making";
 import { Player } from "./player";
@@ -21,15 +22,25 @@ export default class Hub implements Room {
 		if (msg.length <= 1) return;
 		const gameID = msg[1];
 		switch (msg[0]) {
+			case hubMsgCodes.joinRoomWithCode:
+				{
+					if (msg.length < 9) return;
+					let room = globalThis.rooms.get(msg.readBigInt64BE(1)) as
+						| GameRoom
+						| undefined;
+					if (room) room.register(player);
+				}
+				break;
 			case hubMsgCodes.joinMatchMaking:
 				addToQueue(player, gameID);
 				break;
-			case hubMsgCodes.createRoom:
+			case hubMsgCodes.createRoom: {
 				if (gameID >= gameList.length) return;
 				let room = new gameList[gameID]();
 				room.register(player);
 				rooms.set(room.id, room);
 				break;
+			}
 		}
 	}
 
