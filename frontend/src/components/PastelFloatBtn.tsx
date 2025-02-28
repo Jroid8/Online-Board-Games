@@ -41,7 +41,7 @@ export default function PastelFloatBtn<T extends React.ElementType>({
 	return (
 		<Tag
 			css={[style, css]}
-			style={{ backgroundColor: color.toString() }}
+			style={{ ...props.style, backgroundColor: color.toString() }}
 			{...props}
 		>
 			{children}
