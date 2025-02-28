@@ -95,7 +95,7 @@ export const useStateStore = create<StateStore>()((set, get) => {
 		offset += 4;
 		const player = {
 			id,
-			name: decoder.decode(data.buffer.slice(offset, len)),
+			name: decoder.decode(data.buffer.slice(offset, offset + len)),
 		};
 		return [player, offset + len];
 	}
