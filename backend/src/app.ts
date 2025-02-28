@@ -158,10 +158,12 @@ async function createUserSession(
 	await sql(
 		`INSERT INTO user_session (tokenstr, expiration, user_id)
  VALUES ($1, $2, ${id})`,
-		[name, expires.toDateString().substring(4).replaceAll(" ", "-")],
+		[token, expires.toDateString().substring(4).replaceAll(" ", "-")],
 	);
 	return [token, expires];
 }
+
+app.use(express.text());
 
 app.post("/login", async (req, res) => {
 	if (typeof req.body != "string") {
@@ -190,7 +192,7 @@ app.post("/login", async (req, res) => {
 	}
 });
 
-app.put("/signin", async (req, res) => {
+app.post("/signin", async (req, res) => {
 	if (typeof req.body != "string") {
 		res.status(400).send("Must send login information in plain text");
 		return;
