@@ -182,7 +182,7 @@ export abstract class GameRoom implements Room {
 	}
 
 	protected generalPlayerEvents(player: Player, msg: Buffer): boolean {
-		if (msg.readUint8(0) === gameMsgCodes.leftRoom) {
+		if (msg.length === 1 && msg.readUint8(0) === gameMsgCodes.leftRoom) {
 			this.playerExit(player, false);
 			return true;
 		}

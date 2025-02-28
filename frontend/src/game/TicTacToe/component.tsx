@@ -7,15 +7,20 @@ import {
 import { Cell, CurrentState, markCell } from "./states";
 import xSVG from "./xmark.svg";
 import oSVG from "./omark.svg";
+import PastelFloatBtn from "../../components/PastelFloatBtn";
+import { useState } from "react";
+import randPastelColor from "../../utils/RandPastelColor";
 
 function Slot({
 	value,
 	onClick,
 	myTurn,
+	color,
 }: {
 	value: Cell;
 	onClick: () => void;
 	myTurn: boolean;
+	color: string;
 }) {
 	let src = null;
 	switch (value) {
@@ -40,23 +45,22 @@ function Slot({
 		<></>
 	);
 	return (
-		<button
+		<PastelFloatBtn
 			css={{
-				backgroundColor: "white",
-				borderRadius: "2vmin",
-				border: "none",
-				boxShadow: "0 0 25px #aaa",
-				cursor: "pointer",
-				"&:disabled": {
-					cursor: "not-allowed",
-					backgroundColor: "lightgray"
-				}
+				textAlign: "center",
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "center",
+				height: "100%",
 			}}
-			disabled={!myTurn || src !== null}
+			style={{
+				backgroundColor: color,
+				cursor: myTurn && src === null ? "pointer" : "not-allowed",
+			}}
 			onClick={onClick}
 		>
 			{img}
-		</button>
+		</PastelFloatBtn>
 	);
 }
 
@@ -68,6 +72,7 @@ export default function TicTacToe() {
 	const board = useStateStore((state) =>
 		state.state === State.Playing ? state.board : emptyBoard,
 	);
+	const [color] = useState(() => randPastelColor().toString());
 
 	function handleClick(index: number) {
 		const current = useStateStore.getState() as CurrentState;
@@ -88,7 +93,7 @@ export default function TicTacToe() {
 				gridTemplateRows: "repeat(3, 28vmin)",
 				gridTemplateColumns: "repeat(3, 28vmin)",
 				height: "100%",
-				gap: "3vmin",
+				gap: "2ch",
 			}}
 		>
 			{board.map((c, i) => (
@@ -96,6 +101,7 @@ export default function TicTacToe() {
 					key={i}
 					myTurn={myTurn}
 					value={c}
+					color={color}
 					onClick={() => handleClick(i)}
 				/>
 			))}
