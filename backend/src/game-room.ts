@@ -57,21 +57,21 @@ export abstract class GameRoom implements Room {
 		return this.players.length >= this.staticFields().playerCount;
 	}
 
-	private serTurnState(): Buffer {
-		const gameStarted = Buffer.alloc(5);
-		gameStarted.writeUInt8(0xd0);
-		gameStarted.writeUInt8(this.isGameStarted() ? 1 : 0);
-		return gameStarted;
+	protected serTurnState(): Buffer {
+		if (!this.isGameStarted()) return Buffer.alloc(0);
+		const turnState = Buffer.alloc(4);
+		turnState.writeUInt32BE(this.players[this.turn].id);
+		return turnState;
 	}
 
 	private sendFullJoinMsg(player: Player) {
 		const serRoomID = Buffer.alloc(8);
 		serRoomID.writeBigUint64BE(this.id);
-		if (this.isGameStarted())
 		player.ws!.send(
 			Buffer.concat([
 				Buffer.from([gameMsgCodes.joinedRoom]),
 				serRoomID,
+				Buffer.from([this.isGameStarted() ? 1 : 0]),
 				this.serTurnState(),
 				this.serializeAllPlayerData(player),
 				this.isGameStarted() ? this.serializeState() : Buffer.alloc(0),
@@ -100,6 +100,7 @@ export abstract class GameRoom implements Room {
 			this.begin();
 			this.broadcastMessage(
 				Buffer.concat([
+					Buffer.from([this.isGameStarted() ? 1 : 0]),
 					this.serTurnState(),
 					this.serializeState(),
 				]),

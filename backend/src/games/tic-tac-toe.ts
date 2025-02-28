@@ -61,10 +61,9 @@ export default class TicTacToe extends GameRoom {
 			}
 		} else {
 			this.turn = 1 - this.turn;
-			const nextTurnMsg = Buffer.alloc(5);
-			nextTurnMsg.writeUInt8(0xd0);
-			nextTurnMsg.writeUInt32BE(this.players[this.turn].id, 1);
-			this.broadcastMessage(nextTurnMsg);
+			this.broadcastMessage(
+				Buffer.concat([Buffer.from([0xd0]), this.serTurnState()]),
+			);
 		}
 	}
 
@@ -77,7 +76,7 @@ export default class TicTacToe extends GameRoom {
 	}
 
 	begin() {
-		const idx = Math.floor(Math.random() * 2)
+		const idx = Math.floor(Math.random() * 2);
 		this.playerX = this.players[idx].id;
 		this.turn = idx;
 	}
