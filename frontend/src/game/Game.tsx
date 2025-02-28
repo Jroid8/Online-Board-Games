@@ -1,6 +1,10 @@
 import { Outlet } from "react-router";
 import LoadingCentered from "../components/LoadingCentered";
 import { Playing, State, useStateStore } from "./ClientState";
+import { useBlocker } from "react-router";
+import { useContext, useEffect } from "react";
+import ModalContext from "../contexts/ModalContext";
+import Conform from "../contexts/Comform";
 
 function Banner({
 	message,
@@ -41,6 +45,25 @@ export default function Game() {
 	const state = useStateStore((store) => store.state);
 	const paused = useStateStore((store) => (store as Playing).paused);
 	const winner = useStateStore((store) => (store as Playing).winner);
+	const blocker = useBlocker(() => state === State.Playing && winner === null);
+	const showModal = useContext(ModalContext)!;
+
+	useEffect(() => {
+		if (blocker.state === "blocked")
+			showModal<boolean>((close) => (
+				<Conform
+					message="Are you sure you want to forfeit this match?"
+					ok="No"
+					cancel="Yes"
+					close={close}
+				/>
+			))
+				.then((r) => {
+					if (r) blocker.proceed!();
+					else blocker.reset!();
+				})
+				.catch(() => blocker.reset!());
+	}, [blocker, showModal]);
 
 	let game = <LoadingCentered message={"Connecting..."} />;
 	if (state === State.InGameNotStarted) {
