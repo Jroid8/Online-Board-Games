@@ -96,12 +96,12 @@ export abstract class GameRoom implements Room {
 	}
 
 	private startGameIfCan() {
-		if (this.players.length == this.staticFields().playerCount) {
+		if (this.isGameStarted()) {
 			this.initPlayerIndex();
 			this.begin();
 			this.broadcastMessage(
 				Buffer.concat([
-					Buffer.from([this.isGameStarted() ? 1 : 0]),
+					Buffer.from([gameMsgCodes.gameStarted]),
 					this.serTurnState(),
 					this.serializeState(),
 				]),
