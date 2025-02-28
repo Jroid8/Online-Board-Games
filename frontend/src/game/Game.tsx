@@ -2,9 +2,10 @@ import { Outlet } from "react-router";
 import LoadingCentered from "../components/LoadingCentered";
 import { Playing, State, useStateStore } from "./ClientState";
 import { useBlocker } from "react-router";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import ModalContext from "../contexts/ModalContext";
 import Conform from "../contexts/Comform";
+import randPastelColor from "../utils/RandPastelColor";
 
 function Banner({
 	message,
@@ -47,23 +48,28 @@ export default function Game() {
 	const winner = useStateStore((store) => (store as Playing).winner);
 	const blocker = useBlocker(() => state === State.Playing && winner === null);
 	const showModal = useContext(ModalContext)!;
+	const [modalShown, setModalShown] = useState(false);
 
 	useEffect(() => {
-		if (blocker.state === "blocked")
-			showModal<boolean>((close) => (
-				<Conform
-					message="Are you sure you want to forfeit this match?"
-					ok="No"
-					cancel="Yes"
-					close={close}
-				/>
-			))
+		if (blocker.state === "blocked" && !modalShown)
+			showModal<boolean>((close) => {
+				setModalShown(true);
+				return (
+					<Conform
+						message="Are you sure you want to forfeit this match?"
+						ok="Yes"
+						cancel="No"
+						close={close}
+					/>
+				);
+			})
 				.then((r) => {
 					if (r) blocker.proceed!();
 					else blocker.reset!();
 				})
-				.catch(() => blocker.reset!());
-	}, [blocker, showModal]);
+				.finally(() => setModalShown(false));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [blocker]);
 
 	let game = <LoadingCentered message={"Connecting..."} />;
 	if (state === State.InGameNotStarted) {
