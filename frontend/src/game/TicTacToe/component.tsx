@@ -71,6 +71,7 @@ export default function TicTacToe() {
 
 	function handleClick(index: number) {
 		const current = useStateStore.getState() as CurrentState;
+		if (!current.myTurn) return;
 		markCell(
 			current,
 			useStateStore.setState,
