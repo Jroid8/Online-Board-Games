@@ -40,6 +40,7 @@ export default class TicTacToe extends GameRoom {
 	}
 
 	onMessage(player: Player, msg: Buffer): void {
+		if (this.generalPlayerEvents(player, msg)) return;
 		let playerIndex = this.playerIndex.get(player.id);
 		if (playerIndex === null || msg.length <= 1 || msg[0] != 1) return;
 		const [x, y] = [msg[1] % 3, Math.floor(msg[1] / 3)];

@@ -5,6 +5,7 @@ import Room from "./room";
 
 export const gameMsgCodes = Object.freeze({
 	joinedRoom: 0xc0,
+	leftRoom: 0xc3,
 	otherPlayerJoinedRoom: 0xc1,
 	otherPlayerDisconnected: 0xc3,
 	gameStarted: 0xc2,
@@ -47,8 +48,7 @@ export abstract class GameRoom implements Room {
 		if (this.players.length === 0) return Buffer.from([0]);
 		const buffs: Buffer[] = [];
 		buffs.push(Buffer.from([this.players.length]));
-		for (const p of this.players)
-			buffs.push(GameRoom.serializePlayerData(p));
+		for (const p of this.players) buffs.push(GameRoom.serializePlayerData(p));
 		return Buffer.concat(buffs);
 	}
 
@@ -146,20 +146,26 @@ export abstract class GameRoom implements Room {
 		log.trace(`Deleted room [${this.id}]`);
 	}
 
-	public onDisconnect(player: Player) {
+	protected playerExit(player: Player, disconnect: boolean) {
 		let disconnectMsg = Buffer.alloc(5);
 		disconnectMsg.writeUInt8(gameMsgCodes.otherPlayerDisconnected);
 		disconnectMsg.writeUInt32BE(player.id, 1);
+		this.broadcastMessage(disconnectMsg);
 		if (this.isGameStarted() && this.playerIndex.get(player.id) !== undefined) {
-			this.forfeitTimeouts.set(
-				player.id,
-				setTimeout(() => this.terminate(true), 1000 * 60 * 2.5),
-			);
+			if (disconnect)
+				this.forfeitTimeouts.set(
+					player.id,
+					setTimeout(() => this.terminate(true), 1000 * 60 * 2.5),
+				);
+			else this.terminate(true);
 		} else {
 			this.players = this.players.filter((p) => p.id != player.id);
 			player.room = globalThis.hub;
 		}
-		this.broadcastMessage(disconnectMsg);
+	}
+
+	public onDisconnect(player: Player) {
+		this.playerExit(player, true);
 		log.trace(`<${player.name}> disconnected from [${this.id}]`);
 	}
 
@@ -173,6 +179,14 @@ export abstract class GameRoom implements Room {
 	public onChat(player: Player, message: Buffer): void {
 		message.writeUInt32BE(player.id, 1);
 		this.broadcastMessage(message, player);
+	}
+
+	protected generalPlayerEvents(player: Player, msg: Buffer): boolean {
+		if (msg.readUint8(0) === gameMsgCodes.leftRoom) {
+			this.playerExit(player, false);
+			return true;
+		}
+		return false;
 	}
 
 	abstract onMessage(player: Player, message: Buffer): void;
