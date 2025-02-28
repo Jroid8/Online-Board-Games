@@ -8,6 +8,7 @@ export const gameMsgCodes = Object.freeze({
 	otherPlayerDisconnected: 0xc3,
 	gameStarted: 0xc2,
 	gameConcluded: 0xc8,
+	playerTurn: 0xd0
 });
 
 // Classes extending this MUST HAVE GameInfo fields as static fields

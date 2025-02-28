@@ -5,6 +5,7 @@ export default {
 		otherPlayerDisconnected: 0xc3,
 		gameStarted: 0xc2,
 		gameConcluded: 0xc8,
+		playerTurn: 0xd0,
 	},
 	hub: {
 		joinRoomWithCode: 0x10,

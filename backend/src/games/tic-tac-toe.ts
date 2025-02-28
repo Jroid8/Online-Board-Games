@@ -62,7 +62,10 @@ export default class TicTacToe extends GameRoom {
 		} else {
 			this.turn = 1 - this.turn;
 			this.broadcastMessage(
-				Buffer.concat([Buffer.from([0xd0]), this.serTurnState()]),
+				Buffer.concat([
+					Buffer.from([gameMsgCodes.playerTurn]),
+					this.serTurnState(),
+				]),
 			);
 		}
 	}
