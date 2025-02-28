@@ -1,0 +1,38 @@
+[
+	{
+		"id": 0,
+		"name": "Tic Tac Toe",
+		"urlName": "tic-tac-toe",
+		"playersOnline": 13
+	},
+	{
+		"id": 1,
+		"name": "Go",
+		"urlName": "go",
+		"playersOnline": 29
+	},
+	{
+		"id": 2,
+		"name": "Checkers",
+		"urlName": "checkers",
+		"playersOnline": 16
+	},
+	{
+		"id": 3,
+		"name": "Snakes & Ladders",
+		"urlName": "snakes-ladders",
+		"playersOnline": 14
+	},
+	{
+		"id": 4,
+		"name": "Ludo",
+		"urlName": "ludo",
+		"playersOnline": 36
+	},
+	{
+		"id": 5,
+		"name": "Chess",
+		"urlName": "chess",
+		"playersOnline": 45
+	}
+]

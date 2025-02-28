@@ -229,5 +229,9 @@ app.post("/signin", async (req, res) => {
 	}
 });
 
+app.get("/game-list", (_, res) => {
+	res.sendFile("game-list.json", { root: "." });
+});
+
 log.info("server started");
 server.listen(process.env.PORT || 8080);
