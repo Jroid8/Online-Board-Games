@@ -143,7 +143,7 @@ export abstract class GameRoom implements Room {
 		for (const p of this.players) p.room = globalThis.hub;
 		this.players = [];
 		globalThis.rooms.delete(this.id);
-		log.trace(`Deleted room [${this.id}]`);
+		log.info(`Deleted room [${this.id}]`);
 	}
 
 	protected playerExit(player: Player, disconnect: boolean) {
@@ -166,14 +166,14 @@ export abstract class GameRoom implements Room {
 
 	public onDisconnect(player: Player) {
 		this.playerExit(player, true);
-		log.trace(`<${player.name}> disconnected from [${this.id}]`);
+		log.info(`<${player.name}> disconnected from [${this.id}]`);
 	}
 
 	public onRejoin(player: Player): void {
 		clearTimeout(this.forfeitTimeouts.get(player.id));
 		this.informPlayerJoin(player);
 		this.sendFullJoinMsg(player);
-		log.trace(`<${player.name}> reconnected to [${this.id}]`);
+		log.info(`<${player.name}> reconnected to [${this.id}]`);
 	}
 
 	public onChat(player: Player, message: Buffer): void {

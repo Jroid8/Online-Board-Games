@@ -18,7 +18,7 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, maxPayload: 256 });
 const sql = neon(process.env.DATABASE_URL!);
-log.setDefaultLevel("debug");
+log.setDefaultLevel("info");
 
 const tokenPlayerMap: Map<string, number> = new Map();
 const playerForgetTimeouts: Map<number, NodeJS.Timeout> = new Map();

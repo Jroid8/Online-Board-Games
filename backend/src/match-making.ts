@@ -13,12 +13,12 @@ function matchMake(gameID: number) {
 		const players = gameQueue.splice(-game.playerCount, game.playerCount);
 		room.addPlayers(players);
 		globalThis.rooms.set(room.id, room);
-		log.trace(players.map(p => `<${p}> `) +"where matched together")
+		log.info(players.map(p => `<${p}> `) +"where matched together")
 	}
 }
 
 export default function addToQueue(player: Player, gameID: number) {
-	log.trace(`<${player.id}> joined the match making queue`)
+	log.info(`<${player.id}> joined the match making queue`)
 	if (gameID >= gameList.length) return;
 	queue[gameID].push(player);
 	setImmediate(() => matchMake(gameID));

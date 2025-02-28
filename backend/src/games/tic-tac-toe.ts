@@ -22,7 +22,7 @@ export default class TicTacToe extends GameRoom {
 		this.board = Array.from({ length: 3 }, () =>
 			new Array(3).fill(BoardSlot.Empty),
 		);
-		log.trace(`Created room [${this.id}] for Tic-Tac-Toe`);
+		log.info(`Created room [${this.id}] for Tic-Tac-Toe`);
 	}
 
 	checkWin(x: number, y: number): boolean {
