@@ -86,7 +86,7 @@ function sendUserInfo(player: Player) {
 
 wss.on("connection", (ws, req) => {
 	let token = cookie.parse(req.headers.cookie!).session!; // no cookies and lack of the session cookie would have been caught
-	let player = globalThis.onlinePlayers.get(tokenPlayerMap.get(token)!)!; // loading player data should have been handled in the headers event
+	let player = globalThis.onlinePlayers.get(tokenPlayerMap.get(token)!) as Player; // loading player data should have been handled in the headers event
 
 	player.ws = ws;
 	if (playerForgetTimeouts.get(player.id)) {
