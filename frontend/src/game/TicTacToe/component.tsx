@@ -46,8 +46,13 @@ function Slot({
 				borderRadius: "2vmin",
 				border: "none",
 				boxShadow: "0 0 25px #aaa",
+				cursor: "pointer",
+				"&:disabled": {
+					cursor: "not-allowed",
+					backgroundColor: "lightgray"
+				}
 			}}
-			disabled={myTurn && src === null}
+			disabled={!myTurn || src !== null}
 			onClick={onClick}
 		>
 			{img}
@@ -66,13 +71,12 @@ export default function TicTacToe() {
 
 	function handleClick(index: number) {
 		const current = useStateStore.getState() as CurrentState;
-		if (myTurn)
-			markCell(
-				current,
-				useStateStore.setState,
-				index,
-				current.user.id === current.xPlayer ? Cell.X : Cell.O,
-			);
+		markCell(
+			current,
+			useStateStore.setState,
+			index,
+			current.user.id === current.xPlayer ? Cell.X : Cell.O,
+		);
 		socket.send(new Uint8Array([1, index]));
 	}
 
